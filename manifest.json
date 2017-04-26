@@ -12,5 +12,14 @@
             "matches": [ "*://*.facebook.com/*" ],
             "js": [ "content_script.js" ]
         }
+    ],
+    "background": {
+        "scripts": [ "background_script.js" ],
+        "persistent": true
+    },
+    "permissions": [
+        "<all_urls>",
+        "webRequest",
+        "webRequestBlocking"
     ]
 }
