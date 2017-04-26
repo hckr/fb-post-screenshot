@@ -1,6 +1,6 @@
 (function(){
 
-var observer = new MutationObserver(callback);
+let observer = new MutationObserver(callback);
 observer.observe(document.documentElement, {
     childList: true,
     subtree: true
@@ -58,29 +58,43 @@ function callback(mutations) {
 function screenshotPost(permalink, callback) {
     permalink += "?"; // so it works on posts' page
     let iframe = document.createElement('iframe');
-    iframe.width = 1200;
-    iframe.height = 800;
+    iframe.style = 'position: absolute; width: 1px; height: 1px; left: -10px;';
     iframe.onload = function() {
         let post = iframe.contentDocument.querySelector('.fbUserContent'),
             post_wrapper = post.parentNode.parentNode;
         post_wrapper.style = post.style || '';
-        post_wrapper.style += ';postition: relative; z-index: 1000;';
-        setTimeout(() => {
-            iframe.contentWindow.scrollTo(0, 0);
-            let rect = post_wrapper.getBoundingClientRect(),
-                x = Math.ceil(rect.x),
-                y = Math.ceil(rect.y),
-                width = Math.ceil(rect.width),
-                height = Math.ceil(rect.height);
-            let canvas = document.createElement('canvas'),
-                ctx = canvas.getContext('2d');
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawWindow(iframe.contentWindow, x, y, width, height, 'rgb(255,255,255)');
-            let image_data_url = canvas.toDataURL();
-            document.body.removeChild(iframe);
-            callback(image_data_url);
-        }, 500);
+        post_wrapper.style += ';postition: relative; z-index: 1000000;';
+
+        function clickz() {
+            let clicked = false;
+            for (let node of post.querySelectorAll('.UFICommentLink, .UFIPagerLink')) {
+                node.click();
+                clicked = true;
+            }
+            return clicked;
+        }
+
+        setTimeout(function unfold() {
+            let clicked = clickz();
+            if (clicked) {
+                setTimeout(unfold, 150);
+            } else {
+                iframe.contentWindow.scrollTo(0, 0);
+                let rect = post_wrapper.getBoundingClientRect(),
+                    x = Math.ceil(rect.x),
+                    y = Math.ceil(rect.y),
+                    width = Math.ceil(rect.width),
+                    height = Math.ceil(rect.height);
+                let canvas = document.createElement('canvas'),
+                    ctx = canvas.getContext('2d');
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawWindow(iframe.contentWindow, x, y, width, height, 'rgb(255,255,255)');
+                let image_data_url = canvas.toDataURL();
+                document.body.removeChild(iframe);
+                callback(image_data_url);
+            }
+        }, 150);
     };
     iframe.src = permalink;
     document.body.append(iframe);
