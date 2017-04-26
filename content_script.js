@@ -34,7 +34,7 @@ function callback(mutations) {
                         let context_layer = findParentWithClass(container, 'uiContextualLayerPositioner'),
                             menu_arrow = document.getElementById(context_layer.getAttribute('data-ownerid')),
                             post = findParentWithClass(menu_arrow, 'fbUserContent'),
-                            permalink = post.querySelector('.timestamp').parentNode.href;
+                            permalink = post.querySelector('abbr').parentNode.href;
                         screenshotPost(permalink, (image_data_url) => {
                             post.click();
                             let a = document.createElement('a');
