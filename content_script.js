@@ -46,7 +46,7 @@ function callback(mutations) {
                             document.body.removeChild(a);
                             button_text.innerHTML = old_text;
                             save_screenshot.onclick = clickHandler;
-                        }), 250);
+                        }), 500);
                     }
                     menu_item.parentNode.insertBefore(save_screenshot, menu_item);
                     return;
@@ -118,6 +118,9 @@ function screenshotPostInCurrentWindow(callback) {
         if (clicked) {
             setTimeout(unfold, 150);
         } else {
+            for (let node of post.querySelectorAll('.UFIAddComment')) {
+                node.parentNode.removeChild(node);
+            }
             window.scrollTo(0, 0);
             let rect = post_wrapper.getBoundingClientRect(),
                 x = Math.ceil(rect.x),
