@@ -34,18 +34,19 @@ function callback(mutations) {
                         let context_layer = findParentWithClass(container, 'uiContextualLayerPositioner'),
                             menu_arrow = document.getElementById(context_layer.getAttribute('data-ownerid')),
                             post = findParentWithClass(menu_arrow, 'fbUserContent'),
-                            permalink = post.querySelector('abbr').parentNode.href;
-                        screenshotPost(permalink, (image_data_url) => {
-                            post.click();
+                            permalink = post.querySelector('abbr').parentNode.href + '?', // so it works on posts' page
+                            post_window = window.open(permalink, 's', 'width=100, height=100, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
+                        post.click();
+                        setTimeout(() => sendMessage(post_window, { type: 'command', command: 'screenshot' }, response => {
                             let a = document.createElement('a');
-                            a.href = image_data_url;
+                            a.href = response.image_data_url;
                             a.download = 'post.png';
                             document.body.appendChild(a);
                             a.click();
                             document.body.removeChild(a);
                             button_text.innerHTML = old_text;
                             save_screenshot.onclick = clickHandler;
-                        });
+                        }), 250);
                     }
                     menu_item.parentNode.insertBefore(save_screenshot, menu_item);
                     return;
@@ -55,49 +56,82 @@ function callback(mutations) {
     }
 }
 
-function screenshotPost(permalink, callback) {
-    permalink += "?"; // so it works on posts' page
-    let iframe = document.createElement('iframe');
-    iframe.style = 'position: absolute; width: 1px; height: 1px; left: -10px;';
-    iframe.onload = function() {
-        let post = iframe.contentDocument.querySelector('.fbUserContent'),
-            post_wrapper = post.parentNode.parentNode;
-        post_wrapper.style = post.style || '';
-        post_wrapper.style += ';postition: relative; z-index: 1000000;';
+let callbacks = {};
 
-        function clickz() {
-            let clicked = false;
-            for (let node of post.querySelectorAll('.UFICommentLink, .UFIPagerLink')) {
-                node.click();
-                clicked = true;
+function sendMessage(win, json_data, callback) {
+    let new_id = +new Date();
+    callbacks[new_id] = callback;
+    json_data['id'] = new_id;
+    console.log(json_data);
+    win.postMessage(JSON.stringify(json_data), 'https://www.facebook.com');
+}
+
+window.addEventListener('message', e => {
+    let origin = e.origin || e.originalEvent.origin;
+    if (origin !== 'https://www.facebook.com')
+        return;
+    if (e.data[0] !== '{')
+        return;
+    let data = JSON.parse(e.data);
+    console.log(data);
+    switch(data.type) {
+        case 'command':
+            switch (data.command) {
+                case 'screenshot':
+                    console.log('here maybe?');
+                    screenshotPostInCurrentWindow(image_data_url => {
+                        e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_url: image_data_url }), origin);
+                        window.close();
+                    });
+                    break;
             }
-            return clicked;
-        }
-
-        setTimeout(function unfold() {
-            let clicked = clickz();
-            if (clicked) {
-                setTimeout(unfold, 150);
+            break;
+        case 'response':
+            if (data.id in callbacks) {
+                callbacks[data.id](data);
+                delete callbacks[data.id];
             } else {
-                iframe.contentWindow.scrollTo(0, 0);
-                let rect = post_wrapper.getBoundingClientRect(),
-                    x = Math.ceil(rect.x),
-                    y = Math.ceil(rect.y),
-                    width = Math.ceil(rect.width),
-                    height = Math.ceil(rect.height);
-                let canvas = document.createElement('canvas'),
-                    ctx = canvas.getContext('2d');
-                canvas.width = width;
-                canvas.height = height;
-                ctx.drawWindow(iframe.contentWindow, x, y, width, height, 'rgb(255,255,255)');
-                let image_data_url = canvas.toDataURL();
-                document.body.removeChild(iframe);
-                callback(image_data_url);
+                console.log('no callback for ' + data.id);
             }
-        }, 150);
-    };
-    iframe.src = permalink;
-    document.body.append(iframe);
+            break;
+    }
+});
+
+function screenshotPostInCurrentWindow(callback) {
+    console.log('works');
+    let post = document.querySelector('.fbUserContent'),
+        post_wrapper = post.parentNode.parentNode;
+    post_wrapper.style = post.style || '';
+    post_wrapper.style += ';postition: relative; z-index: 1000000;';
+
+    function clickz() {
+        let clicked = false;
+        for (let node of post.querySelectorAll('.UFICommentLink, .UFIPagerLink')) {
+            node.click();
+            clicked = true;
+        }
+        return clicked;
+    }
+
+    setTimeout(function unfold() {
+        let clicked = clickz();
+        if (clicked) {
+            setTimeout(unfold, 150);
+        } else {
+            window.scrollTo(0, 0);
+            let rect = post_wrapper.getBoundingClientRect(),
+                x = Math.ceil(rect.x),
+                y = Math.ceil(rect.y),
+                width = Math.ceil(rect.width),
+                height = Math.ceil(rect.height);
+            let canvas = document.createElement('canvas'),
+                ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawWindow(window, x, y, width, height, 'rgb(255,255,255)');
+            callback(canvas.toDataURL());
+        }
+    }, 150);
 }
 
 function findParentWithClass(el, klass) {
