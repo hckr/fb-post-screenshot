@@ -34,7 +34,7 @@ function callback(mutations) {
                         let context_layer = findParentWithClass(container, 'uiContextualLayerPositioner'),
                             menu_arrow = document.getElementById(context_layer.getAttribute('data-ownerid')),
                             post = findParentWithClass(menu_arrow, 'fbUserContent'),
-                            permalink = post.querySelector('abbr').parentNode.href + '?', // so it works on posts' page
+                            permalink = post.querySelector('abbr').parentNode.href,
                             post_window = window.open(permalink, 's', 'width=100, height=100, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
                         post.click();
                         setTimeout(() => sendMessage(post_window, { type: 'command', command: 'screenshot' }, response => {
@@ -81,7 +81,7 @@ window.addEventListener('message', e => {
                     console.log('here maybe?');
                     screenshotPostInCurrentWindow(image_data_url => {
                         e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_url: image_data_url }), origin);
-                        window.close();
+                        // window.close();
                     });
                     break;
             }
@@ -98,26 +98,59 @@ window.addEventListener('message', e => {
 });
 
 function screenshotPostInCurrentWindow(callback) {
-    console.log('works');
-    let post = document.querySelector('.fbUserContent'),
-        post_wrapper = post.parentNode.parentNode;
-    post_wrapper.style = post.style || '';
-    post_wrapper.style += ';postition: relative; z-index: 1000000;';
+    window.addEventListener('load', function() {
+        let post = document.querySelector('.fbUserContent'),
+            post_wrapper = post.parentNode.parentNode;
+        post_wrapper.style = post.style || '';
+        post_wrapper.style += ';postition: relative; z-index: 1000000;';
 
-    function clickz() {
-        let clicked = false;
-        for (let node of post.querySelectorAll('.UFICommentLink, .UFIPagerLink')) {
-            node.click();
-            clicked = true;
+        let unfoldQueue = [];
+
+        function discoverUnfoldLinks() {
+            let pagers = post.querySelectorAll('.UFIPagerLink');
+            pagers.forEach(node => node.__wait = 5000);
+            let seeMores = post.querySelectorAll('.fss');
+            seeMores.forEach(node => node.__wait = 150);
+            let replies = [].filter.call(post.querySelectorAll('.UFICommentLink'), node => {
+                if (node.__visited)
+                    return false;
+                node.__visited = true;
+                node.__wait = 1500;
+                return true;
+            });
+            unfoldQueue.push(...pagers);
+            unfoldQueue.push(...replies);
+            unfoldQueue.push(...seeMores);
+
+            console.log(unfoldQueue);
         }
-        return clicked;
-    }
 
-    setTimeout(function unfold() {
-        let clicked = clickz();
-        if (clicked) {
-            setTimeout(unfold, 150);
-        } else {
+        function unfoldComments(callback) {
+            if (!unfoldQueue.length) {
+                discoverUnfoldLinks();
+                setTimeout(unfoldComments2, 10, callbacks);
+            } else {
+                unfoldComments2(callback);
+            }
+        }
+
+        function unfoldComments2(callback) {
+            if (unfoldQueue.length) {
+                let node = unfoldQueue.pop();
+                node.click();
+                setTimeout(unfoldComments, node.__wait, callback);
+            } else {
+                console.log('Is it really nothing?');
+                console.log([].filter.call(post.querySelectorAll('.UFICommentLink'), node => {
+                    if (node.__visited)
+                        return false;
+                    return true;
+                }));
+                setTimeout(callback, 150);
+            }
+        }
+
+        unfoldComments(() => {
             for (let node of post.querySelectorAll('.UFIAddComment')) {
                 node.parentNode.removeChild(node);
             }
@@ -133,8 +166,8 @@ function screenshotPostInCurrentWindow(callback) {
             canvas.height = height;
             ctx.drawWindow(window, x, y, width, height, 'rgb(255,255,255)');
             callback(canvas.toDataURL());
-        }
-    }, 150);
+        });
+    });
 }
 
 function findParentWithClass(el, klass) {
