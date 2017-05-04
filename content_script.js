@@ -62,111 +62,103 @@ function sendMessage(win, json_data, callback) {
     let new_id = +new Date();
     callbacks[new_id] = callback;
     json_data['id'] = new_id;
-    console.log(json_data);
     win.postMessage(JSON.stringify(json_data), 'https://www.facebook.com');
 }
 
 window.addEventListener('message', e => {
-    let origin = e.origin || e.originalEvent.origin;
-    if (origin !== 'https://www.facebook.com')
-        return;
-    if (e.data[0] !== '{')
-        return;
-    let data = JSON.parse(e.data);
-    console.log(data);
-    switch(data.type) {
-        case 'command':
-            switch (data.command) {
-                case 'screenshot':
-                    console.log('here maybe?');
-                    screenshotPostInCurrentWindow(image_data_url => {
-                        e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_url: image_data_url }), origin);
-                        // window.close();
-                    });
-                    break;
-            }
-            break;
-        case 'response':
-            if (data.id in callbacks) {
-                callbacks[data.id](data);
-                delete callbacks[data.id];
-            } else {
-                console.log('no callback for ' + data.id);
-            }
-            break;
-    }
+    setTimeout(() => {
+        let origin = e.origin || e.originalEvent.origin;
+        if (origin !== 'https://www.facebook.com')
+            return;
+        if (e.data[0] !== '{')
+            return;
+        let data = JSON.parse(e.data);
+        console.log(data);
+        switch(data.type) {
+            case 'command':
+                switch (data.command) {
+                    case 'screenshot':
+                        screenshotPostInCurrentWindow(image_data_url => {
+                            e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_url: image_data_url }), origin);
+                            window.close();
+                        });
+                        break;
+                }
+                break;
+            case 'response':
+                if (data.id in callbacks) {
+                    callbacks[data.id](data);
+                    delete callbacks[data.id];
+                } else {
+                    console.warn('no callback for ' + data.id);
+                }
+                break;
+        }
+    }, 500);
 });
 
 function screenshotPostInCurrentWindow(callback) {
-    window.addEventListener('load', function() {
-        let post = document.querySelector('.fbUserContent'),
-            post_wrapper = post.parentNode.parentNode;
-        post_wrapper.style = post.style || '';
-        post_wrapper.style += ';postition: relative; z-index: 1000000;';
+    let post = document.querySelector('.fbUserContent'),
+        post_wrapper = post.parentNode.parentNode;
+    post_wrapper.style = post.style || '';
+    post_wrapper.style += ';postition: relative; z-index: 1000000;';
 
-        let unfoldQueue = [];
+    let unfoldQueue = [];
 
-        function discoverUnfoldLinks() {
-            let pagers = post.querySelectorAll('.UFIPagerLink');
-            pagers.forEach(node => node.__wait = 5000);
-            let seeMores = post.querySelectorAll('.fss');
-            seeMores.forEach(node => node.__wait = 150);
-            let replies = [].filter.call(post.querySelectorAll('.UFICommentLink'), node => {
-                if (node.__visited)
-                    return false;
-                node.__visited = true;
-                node.__wait = 1500;
-                return true;
-            });
-            unfoldQueue.push(...pagers);
-            unfoldQueue.push(...replies);
-            unfoldQueue.push(...seeMores);
-
-            console.log(unfoldQueue);
-        }
-
-        function unfoldComments(callback) {
-            if (!unfoldQueue.length) {
-                discoverUnfoldLinks();
-                setTimeout(unfoldComments2, 10, callbacks);
-            } else {
-                unfoldComments2(callback);
-            }
-        }
-
-        function unfoldComments2(callback) {
-            if (unfoldQueue.length) {
-                let node = unfoldQueue.pop();
-                node.click();
-                setTimeout(unfoldComments, node.__wait, callback);
-            } else {
-                console.log('Is it really nothing?');
-                console.log([].filter.call(post.querySelectorAll('.UFICommentLink'), node => {
-                    if (node.__visited)
-                        return false;
-                    return true;
-                }));
-                setTimeout(callback, 150);
-            }
-        }
-
-        unfoldComments(() => {
-            for (let node of post.querySelectorAll('.UFIAddComment')) {
-                node.parentNode.removeChild(node);
-            }
-            window.scrollTo(0, 0);
-            let rect = post_wrapper.getBoundingClientRect(),
-                x = Math.ceil(rect.x),
-                y = Math.ceil(rect.y),
-                width = Math.ceil(rect.width),
-                height = Math.ceil(rect.height);
-            let canvas = document.createElement('canvas'),
-                ctx = canvas.getContext('2d');
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawWindow(window, x, y, width, height, 'rgb(255,255,255)');
-            callback(canvas.toDataURL());
+    function discoverUnfoldLinks() {
+        let pagers = post.querySelectorAll('.UFIPagerLink');
+        pagers.forEach(node => node.__wait = 5000);
+        let seeMores = post.querySelectorAll('.fss');
+        seeMores.forEach(node => node.__wait = 150);
+        let replies = [].filter.call(post.querySelectorAll('.UFICommentLink'), node => {
+            if (node.__visited)
+                return false;
+            node.__visited = true;
+            node.__wait = 1500;
+            return true;
         });
+        unfoldQueue.push(...pagers);
+        unfoldQueue.push(...replies);
+        unfoldQueue.push(...seeMores);
+
+        console.log(unfoldQueue);
+    }
+
+    function unfoldComments(callback) {
+        if (!unfoldQueue.length) {
+            discoverUnfoldLinks();
+            setTimeout(unfoldComments2, 10, callback);
+        } else {
+            unfoldComments2(callback);
+        }
+    }
+
+    function unfoldComments2(callback) {
+        if (unfoldQueue.length) {
+            let node = unfoldQueue.pop();
+            node.click();
+            setTimeout(unfoldComments, node.__wait, callback);
+        } else {
+            setTimeout(callback, 150);
+        }
+    }
+
+    unfoldComments(() => {
+        for (let node of post.querySelectorAll('.UFIAddComment')) {
+            node.parentNode.removeChild(node);
+        }
+        window.scrollTo(0, 0);
+        let rect = post_wrapper.getBoundingClientRect(),
+            x = Math.ceil(rect.x),
+            y = Math.ceil(rect.y),
+            width = Math.ceil(rect.width),
+            height = Math.ceil(rect.height);
+        let canvas = document.createElement('canvas'),
+            ctx = canvas.getContext('2d');
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawWindow(window, x, y, width, height, 'rgb(255,255,255)');
+        callback(canvas.toDataURL());
     });
 }
 
