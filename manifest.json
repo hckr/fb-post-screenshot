@@ -15,5 +15,10 @@
     ],
     "permissions": [
         "<all_urls>"
-    ]
+    ],
+    "applications": {
+        "gecko": {
+            "strict_min_version": "54.0"
+        }
+    }
 }
