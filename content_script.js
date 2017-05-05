@@ -124,6 +124,7 @@ function screenshotPostInCurrentWindow(callback) {
     let post = document.querySelector('.fbUserContent'),
         post_wrapper = post.parentNode.parentNode;
     post_wrapper.style = post.style || '';
+    post_wrapper.style += ';postition: relative; left: 200px; z-index: 1000000;';
 
     let unfoldQueue = [];
 
