@@ -17,6 +17,18 @@ function callback(mutations) {
                 if (container.querySelector('.save_screenshot')) {
                     return;
                 }
+                let context_layer, menu_arrow, post, permalink;
+                try {
+                    context_layer = findParentWithClass(container, 'uiContextualLayerPositioner'),
+                    menu_arrow = document.getElementById(context_layer.getAttribute('data-ownerid')),
+                    post = findParentWithClass(menu_arrow, 'fbUserContent'),
+                    permalink = post.querySelector('abbr').parentNode.href;
+                    if (!permalink) {
+                        return;
+                    }
+                } catch (e) {
+                    return;
+                }
                 let menu_item = container.querySelector('.__MenuItem');
                 if (menu_item) {
                     let save_screenshot = document.createElement('li');
@@ -31,11 +43,7 @@ function callback(mutations) {
                         let button_text = save_screenshot.querySelector('.__text'),
                             old_text = button_text.innerHTML;
                         button_text.innerHTML = 'Creating screenshot...'
-                        let context_layer = findParentWithClass(container, 'uiContextualLayerPositioner'),
-                            menu_arrow = document.getElementById(context_layer.getAttribute('data-ownerid')),
-                            post = findParentWithClass(menu_arrow, 'fbUserContent'),
-                            permalink = post.querySelector('abbr').parentNode.href,
-                            post_window = window.open(permalink, 's', 'width=100, height=100, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
+                        let post_window = window.open(permalink, 's', 'width=100, height=100, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
                         post.click();
                         function responseCallback(response) {
                             let post_id = permalink.match(/(\d+)(?!.*\d)/)[1],
