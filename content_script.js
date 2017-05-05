@@ -55,13 +55,7 @@ function callback(mutations) {
                             button_text.innerHTML = old_text;
                             save_screenshot.onclick = clickHandler;
                         }
-                        setTimeout(function trySendMessage() {
-                            try {
-                                sendMessage(post_window, { type: 'command', command: 'screenshot' }, responseCallback);
-                            } catch (e) {
-                                setTimeout(trySendMessage, 500);
-                            }
-                        }, 500);
+                        setTimeout(() => { sendMessage(post_window, { type: 'command', command: 'screenshot' }, responseCallback); }, 1500);
                     }
                     menu_item.parentNode.insertBefore(save_screenshot, menu_item);
                     return;
