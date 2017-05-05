@@ -37,7 +37,7 @@ function callback(mutations) {
                             permalink = post.querySelector('abbr').parentNode.href,
                             post_window = window.open(permalink, 's', 'width=100, height=100, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
                         post.click();
-                        setTimeout(() => sendMessage(post_window, { type: 'command', command: 'screenshot' }, response => {
+                        function responseCallback(response) {
                             let post_id = permalink.match(/(\d+)(?!.*\d)/)[1],
                                 part_nr = 1;
                             for (let image_data_url of response.image_data_urls) {
@@ -54,7 +54,14 @@ function callback(mutations) {
                             }
                             button_text.innerHTML = old_text;
                             save_screenshot.onclick = clickHandler;
-                        }), 500);
+                        }
+                        setTimeout(function trySendMessage() {
+                            try {
+                                sendMessage(post_window, { type: 'command', command: 'screenshot' }, responseCallback);
+                            } catch (e) {
+                                setTimeout(trySendMessage, 500);
+                            }
+                        }, 500);
                     }
                     menu_item.parentNode.insertBefore(save_screenshot, menu_item);
                     return;
