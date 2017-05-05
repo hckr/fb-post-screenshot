@@ -38,12 +38,20 @@ function callback(mutations) {
                             post_window = window.open(permalink, 's', 'width=100, height=100, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
                         post.click();
                         setTimeout(() => sendMessage(post_window, { type: 'command', command: 'screenshot' }, response => {
-                            let a = document.createElement('a');
-                            a.href = response.image_data_url;
-                            a.download = 'post.png';
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
+                            let post_id = permalink.match(/(\d+)(?!.*\d)/)[1],
+                                part_nr = 1;
+                            for (let image_data_url of response.image_data_urls) {
+                                let a = document.createElement('a');
+                                a.href = image_data_url;
+                                if (response.image_data_urls.length > 1) {
+                                    a.download = `post-${post_id}-${part_nr++}-of-${response.image_data_urls.length}.jpg`;
+                                } else {
+                                    a.download = `post-${post_id}.jpg`;
+                                }
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                            }
                             button_text.innerHTML = old_text;
                             save_screenshot.onclick = clickHandler;
                         }), 500);
@@ -66,56 +74,58 @@ function sendMessage(win, json_data, callback) {
 }
 
 window.addEventListener('message', e => {
-    setTimeout(() => {
-        let origin = e.origin || e.originalEvent.origin;
-        if (origin !== 'https://www.facebook.com')
-            return;
-        if (e.data[0] !== '{')
-            return;
-        let data = JSON.parse(e.data);
-        console.log(data);
-        switch(data.type) {
-            case 'command':
-                switch (data.command) {
-                    case 'screenshot':
-                        screenshotPostInCurrentWindow(image_data_url => {
-                            e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_url: image_data_url }), origin);
+    let origin = e.origin || e.originalEvent.origin;
+    if (origin !== 'https://www.facebook.com')
+        return;
+    if (e.data[0] !== '{')
+        return;
+    let data = JSON.parse(e.data);
+    console.log(data);
+    switch(data.type) {
+        case 'command':
+            switch (data.command) {
+                case 'screenshot':
+                    function initScreenshot() {
+                        document.querySelector('title').innerHTML = 'Screenshooting...';
+                        document.body.insertAdjacentHTML('beforeend', '<div style="position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 5000; color: #ddf; background: #111; display: table; width:100%; height:100%; font-size: 24px"><span style="display: table-cell; vertical-align: middle; text-align: center;">Please wait...<br>Do not close any windows!</span></div>');
+                        screenshotPostInCurrentWindow(image_data_urls => {
+                            e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_urls: image_data_urls }), origin);
                             window.close();
                         });
-                        break;
-                }
-                break;
-            case 'response':
-                if (data.id in callbacks) {
-                    callbacks[data.id](data);
-                    delete callbacks[data.id];
-                } else {
-                    console.warn('no callback for ' + data.id);
-                }
-                break;
-        }
-    }, 500);
+                    }
+                    window.addEventListener('load', initScreenshot);
+                    if (document.readyState === 'complete') {
+                        initScreenshot();
+                    }
+                    break;
+            }
+            break;
+        case 'response':
+            if (data.id in callbacks) {
+                callbacks[data.id](data);
+                delete callbacks[data.id];
+            } else {
+                console.warn('no callback for ' + data.id);
+            }
+            break;
+    }
 });
 
 function screenshotPostInCurrentWindow(callback) {
     let post = document.querySelector('.fbUserContent'),
         post_wrapper = post.parentNode.parentNode;
     post_wrapper.style = post.style || '';
-    post_wrapper.style += ';postition: relative; z-index: 1000000;';
 
     let unfoldQueue = [];
 
     function discoverUnfoldLinks() {
         let pagers = post.querySelectorAll('.UFIPagerLink');
-        pagers.forEach(node => node.__wait = 5000);
+        pagers.forEach(node => node.__wait = 1000);
         let seeMores = post.querySelectorAll('.fss');
         seeMores.forEach(node => node.__wait = 150);
         let replies = [].filter.call(post.querySelectorAll('.UFICommentLink'), node => {
-            if (node.__visited)
-                return false;
-            node.__visited = true;
-            node.__wait = 1500;
-            return true;
+            node.__wait = 1000;
+            return node.parentNode.parentNode.childNodes.length == 1;
         });
         unfoldQueue.push(...pagers);
         unfoldQueue.push(...replies);
@@ -127,10 +137,8 @@ function screenshotPostInCurrentWindow(callback) {
     function unfoldComments(callback) {
         if (!unfoldQueue.length) {
             discoverUnfoldLinks();
-            setTimeout(unfoldComments2, 10, callback);
-        } else {
-            unfoldComments2(callback);
         }
+        unfoldComments2(callback);
     }
 
     function unfoldComments2(callback) {
@@ -155,10 +163,27 @@ function screenshotPostInCurrentWindow(callback) {
             height = Math.ceil(rect.height);
         let canvas = document.createElement('canvas'),
             ctx = canvas.getContext('2d');
-        canvas.width = width;
-        canvas.height = height;
-        ctx.drawWindow(window, x, y, width, height, 'rgb(255,255,255)');
-        callback(canvas.toDataURL());
+        let maxPartSize = 8192,
+            currentY = y,
+            leftHeight = height,
+            image_data_urls = [];
+        while (leftHeight > 0) {
+            let partHeight = leftHeight;
+            if (leftHeight > maxPartSize) {
+                partHeight = maxPartSize;
+            }
+
+            canvas.width = width;
+            canvas.height = partHeight;
+            ctx.drawWindow(window, x, y, width, partHeight, 'rgb(255,255,255)');
+            image_data_urls.push(canvas.toDataURL(callback, 'image/jpeg', 0.95));
+
+            y += partHeight;
+            leftHeight -= partHeight;
+
+            console.log(height, leftHeight, partHeight, y);
+        }
+        callback(image_data_urls);
     });
 }
 
