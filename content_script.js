@@ -31,18 +31,38 @@ function callback(mutations) {
                 }
                 let menu_item = container.querySelector('.__MenuItem');
                 if (menu_item) {
-                    let save_screenshot = document.createElement('li');
+                    let save_screenshot = document.createElement('li'),
+                        button_text = 'Save screenshot of this post';
                     save_screenshot.className = '_54ni _41t6 __MenuItem save_screenshot';
                     save_screenshot.role = 'presentation';
-                    save_screenshot.innerHTML = '<a class="_54nc" href="#" role="menuitem" title="Save screenshot of this post"><span><span class="_54nh"><div class="_4p23"><i class="_4p24 img sp_CH8VYa8kmd6 sx_f85522"></i><i class="_4p25 img sp_CH8VYa8kmd6 sx_e405a2"></i><span class="__text">Save screenshot of this post</span></div></span></span></a>';
+                    let save_screenshot_a = document.createElement('a');
+                    save_screenshot_a.className = '_54nc';
+                    save_screenshot_a.setAttribute('role', 'menuitem');
+                    save_screenshot_a.title = button_text;
+                    save_screenshot.appendChild(save_screenshot_a);
+                    let save_screenshot_a_span = document.createElement('span');
+                    save_screenshot_a.appendChild(save_screenshot_a_span);
+                    let save_screenshot_a_span_span = document.createElement('span');
+                    save_screenshot_a_span_span.className = '_54nh';
+                    save_screenshot_a_span.appendChild(save_screenshot_a_span_span);
+                    let save_screenshot_a_span_span_div = document.createElement('div');
+                    save_screenshot_a_span_span_div.className = '_4p23';
+                    save_screenshot_a_span_span.appendChild(save_screenshot_a_span_span_div);
+                    let save_screenshot_a_span_span_div_i1 = document.createElement('i');
+                    save_screenshot_a_span_span_div_i1.className = '_4p24 img sp_CH8VYa8kmd6 sx_f85522';
+                    let save_screenshot_a_span_span_div_i2 = document.createElement('i');
+                    save_screenshot_a_span_span_div.appendChild(save_screenshot_a_span_span_div_i1);
+                    save_screenshot_a_span_span_div_i2.className = '_4p25 img sp_CH8VYa8kmd6 sx_e405a2';
+                    save_screenshot_a_span_span_div.appendChild(save_screenshot_a_span_span_div_i2);
+                    let button_text_node = document.createTextNode(button_text);
+                    save_screenshot_a_span_span_div.appendChild(button_text_node);
+                    // save_screenshot.innerHTML = '<div class="_4p23"><i class="_4p24 img sp_CH8VYa8kmd6 sx_f85522"></i><i class="_4p25 img sp_CH8VYa8kmd6 sx_e405a2"></i><span class="__text"></span></div></span></span></a>';
                     save_screenshot.onmouseover = function() { this.classList.add('_54ne'); };
                     save_screenshot.onmouseout = function() { this.classList.remove('_54ne'); };
                     save_screenshot.onclick = clickHandler;
                     function clickHandler() {
                         save_screenshot.onclick = undefined;
-                        let button_text = save_screenshot.querySelector('.__text'),
-                            old_text = button_text.innerHTML;
-                        button_text.innerHTML = 'Creating screenshot...'
+                        button_text_node.textContent = 'Creating screenshot...'
                         let post_window = window.open(permalink, 's', 'width=100, height=100, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
                         post.click();
                         function responseCallback(response) {
@@ -60,7 +80,7 @@ function callback(mutations) {
                                 a.click();
                                 document.body.removeChild(a);
                             }
-                            button_text.innerHTML = old_text;
+                            button_text_node.textContent = button_text;
                             save_screenshot.onclick = clickHandler;
                         }
                         setTimeout(() => { sendMessage(post_window, { type: 'command', command: 'screenshot' }, responseCallback); }, 5000);
@@ -89,14 +109,21 @@ window.addEventListener('message', e => {
     if (e.data[0] !== '{')
         return;
     let data = JSON.parse(e.data);
-    console.log(data);
     switch(data.type) {
         case 'command':
             switch (data.command) {
                 case 'screenshot':
                     function initScreenshot() {
-                        document.querySelector('title').innerHTML = 'Screenshooting...';
-                        document.body.insertAdjacentHTML('beforeend', '<div style="position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 5000; color: #ddf; background: #111; display: table; width:100%; height:100%; font-size: 24px"><span style="display: table-cell; vertical-align: middle; text-align: center;">Please wait...<br>Do not close any windows!</span></div>');
+                        document.querySelector('title').textContent = 'Screenshooting...';
+                        let notice_outer_div = document.createElement('div');
+                        notice_outer_div.style = 'position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 5000; color: #acf; background: #138; display: table; width:100%; height:100%; font-size: 24px';
+                        let notice_inner_span = document.createElement('span');
+                        notice_inner_span.style = 'display: table-cell; vertical-align: middle; text-align: center';
+                        notice_inner_span.appendChild(document.createTextNode('Please wait...'));
+                        notice_inner_span.appendChild(document.createElement('br'));
+                        notice_inner_span.appendChild(document.createTextNode('Do not close any windows!'));
+                        notice_outer_div.appendChild(notice_inner_span);
+                        document.body.appendChild(notice_outer_div);
                         screenshotPostInCurrentWindow(image_data_urls => {
                             e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_urls: image_data_urls }), origin);
                             window.close();
@@ -113,8 +140,6 @@ window.addEventListener('message', e => {
             if (data.id in callbacks) {
                 callbacks[data.id](data);
                 delete callbacks[data.id];
-            } else {
-                console.warn('no callback for ' + data.id);
             }
             break;
     }
@@ -140,8 +165,6 @@ function screenshotPostInCurrentWindow(callback) {
         unfoldQueue.push(...pagers);
         unfoldQueue.push(...replies);
         unfoldQueue.push(...seeMores);
-
-        console.log(unfoldQueue);
     }
 
     function unfoldComments(callback) {
@@ -190,8 +213,6 @@ function screenshotPostInCurrentWindow(callback) {
 
             y += partHeight;
             leftHeight -= partHeight;
-
-            console.log(height, leftHeight, partHeight, y);
         }
         callback(image_data_urls);
     });
