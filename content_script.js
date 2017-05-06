@@ -63,7 +63,7 @@ function callback(mutations) {
                             button_text.innerHTML = old_text;
                             save_screenshot.onclick = clickHandler;
                         }
-                        setTimeout(() => { sendMessage(post_window, { type: 'command', command: 'screenshot' }, responseCallback); }, 1500);
+                        setTimeout(() => { sendMessage(post_window, { type: 'command', command: 'screenshot' }, responseCallback); }, 5000);
                     }
                     menu_item.parentNode.insertBefore(save_screenshot, menu_item);
                     return;
