@@ -48,11 +48,12 @@ function callback(mutations) {
                     let save_screenshot_a_span_span_div = document.createElement('div');
                     save_screenshot_a_span_span_div.className = '_4p23';
                     save_screenshot_a_span_span.appendChild(save_screenshot_a_span_span_div);
+                    let save_post_i_els = container.querySelector('[ajaxify^="/save"]').querySelectorAll('i');
                     let save_screenshot_a_span_span_div_i1 = document.createElement('i');
-                    save_screenshot_a_span_span_div_i1.className = '_4p24 img sp_CH8VYa8kmd6 sx_f85522';
+                    save_screenshot_a_span_span_div_i1.className = save_post_i_els[0].className;
                     let save_screenshot_a_span_span_div_i2 = document.createElement('i');
                     save_screenshot_a_span_span_div.appendChild(save_screenshot_a_span_span_div_i1);
-                    save_screenshot_a_span_span_div_i2.className = '_4p25 img sp_CH8VYa8kmd6 sx_e405a2';
+                    save_screenshot_a_span_span_div_i2.className = save_post_i_els[1].className;
                     save_screenshot_a_span_span_div.appendChild(save_screenshot_a_span_span_div_i2);
                     let button_text_node = document.createTextNode(button_text);
                     save_screenshot_a_span_span_div.appendChild(button_text_node);
