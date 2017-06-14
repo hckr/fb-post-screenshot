@@ -186,6 +186,10 @@ function screenshotPostInCurrentWindow(callback) {
     }
 
     unfoldComments(() => {
+        let commentAsSelector = document.querySelector('._pbn');
+        if (commentAsSelector) {
+            commentAsSelector.parentNode.removeChild(commentAsSelector);
+        }
         for (let node of post.querySelectorAll('.UFIAddComment')) {
             node.parentNode.removeChild(node);
         }
