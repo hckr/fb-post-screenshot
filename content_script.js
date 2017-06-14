@@ -64,7 +64,7 @@ function callback(mutations) {
                     function clickHandler() {
                         save_screenshot.onclick = undefined;
                         button_text_node.textContent = 'Creating screenshot...'
-                        let post_window = window.open(permalink, 's', 'width=100, height=100, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
+                        let post_window = window.open(permalink, 's', 'width=300, height=100, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
                         post.click();
                         function responseCallback(response) {
                             let post_id = permalink.match(/(\d+)(?!.*\d)/)[1],
