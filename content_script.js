@@ -186,6 +186,11 @@ function screenshotPostInCurrentWindow(callback) {
     }
 
     unfoldComments(() => {
+        // hide theater view:
+        let style = document.createElement('style');
+        document.head.appendChild(style);
+        style.sheet.insertRule('#photos_snowlift { display: none; }');
+        // ------------------
         let commentAsSelector = document.querySelector('._pbn');
         if (commentAsSelector) {
             commentAsSelector.parentNode.removeChild(commentAsSelector);
