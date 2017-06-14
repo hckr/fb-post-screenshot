@@ -67,7 +67,7 @@ function callback(mutations) {
                         let post_window = window.open(permalink, 's', 'width=300, height=100, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
                         post.click();
                         function responseCallback(response) {
-                            let post_id = permalink.match(/(\d+)(?!.*\d)/)[1],
+                            let post_id = permalink.match(/(\d{2,})(?!.*\d{2,})/)[1],
                                 part_nr = 1;
                             for (let image_data_url of response.image_data_urls) {
                                 let a = document.createElement('a');
