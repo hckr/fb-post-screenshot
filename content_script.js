@@ -189,7 +189,7 @@ function screenshotPostInCurrentWindow(callback) {
         // hide theater view:
         let style = document.createElement('style');
         document.head.appendChild(style);
-        style.sheet.insertRule('#photos_snowlift { display: none; }');
+        style.sheet.insertRule('#photos_snowlift { display: none; }', 0);
         // ------------------
         let commentAsSelector = document.querySelector('._pbn');
         if (commentAsSelector) {
@@ -219,7 +219,7 @@ function screenshotPostInCurrentWindow(callback) {
             canvas.width = width;
             canvas.height = partHeight;
             ctx.drawWindow(window, x, y, width, partHeight, 'rgb(255,255,255)');
-            image_data_urls.push(canvas.toDataURL(callback, 'image/jpeg', 0.95));
+            image_data_urls.push(canvas.toDataURL('image/jpeg', 0.95));
 
             y += partHeight;
             leftHeight -= partHeight;
