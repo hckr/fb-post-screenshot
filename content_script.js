@@ -166,6 +166,11 @@ function screenshotPostInCurrentWindow(callback) {
         unfoldQueue.push(...pagers);
         unfoldQueue.push(...replies);
         unfoldQueue.push(...seeMores);
+        let pollOptions = post.querySelector('._3coo');
+        if (pollOptions) {
+            pollOptions.__wait = 10;
+            unfoldQueue.push(pollOptions);
+        }
     }
 
     function unfoldComments(callback) {
