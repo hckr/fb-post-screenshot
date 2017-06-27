@@ -31,41 +31,54 @@ function callback(mutations) {
                 }
                 let menu_item = container.querySelector('.__MenuItem');
                 if (menu_item) {
-                    let save_screenshot = document.createElement('li'),
-                        button_text = 'Save screenshot of this post';
-                    save_screenshot.className = '_54ni _41t6 __MenuItem save_screenshot';
-                    save_screenshot.role = 'presentation';
-                    let save_screenshot_a = document.createElement('a');
-                    save_screenshot_a.className = '_54nc';
-                    save_screenshot_a.setAttribute('role', 'menuitem');
-                    save_screenshot_a.title = button_text;
-                    save_screenshot.appendChild(save_screenshot_a);
-                    let save_screenshot_a_span = document.createElement('span');
-                    save_screenshot_a.appendChild(save_screenshot_a_span);
-                    let save_screenshot_a_span_span = document.createElement('span');
-                    save_screenshot_a_span_span.className = '_54nh';
-                    save_screenshot_a_span.appendChild(save_screenshot_a_span_span);
-                    let save_screenshot_a_span_span_div = document.createElement('div');
-                    save_screenshot_a_span_span_div.className = '_4p23';
-                    save_screenshot_a_span_span.appendChild(save_screenshot_a_span_span_div);
-                    let save_post_i_els = container.querySelector('[ajaxify^="/save"]').querySelectorAll('i');
-                    let save_screenshot_a_span_span_div_i1 = document.createElement('i');
-                    save_screenshot_a_span_span_div_i1.className = save_post_i_els[0].className;
-                    let save_screenshot_a_span_span_div_i2 = document.createElement('i');
-                    save_screenshot_a_span_span_div.appendChild(save_screenshot_a_span_span_div_i1);
-                    save_screenshot_a_span_span_div_i2.className = save_post_i_els[1].className;
-                    save_screenshot_a_span_span_div.appendChild(save_screenshot_a_span_span_div_i2);
-                    let button_text_node = document.createTextNode(button_text);
-                    save_screenshot_a_span_span_div.appendChild(button_text_node);
-                    // save_screenshot.innerHTML = '<div class="_4p23"><i class="_4p24 img sp_CH8VYa8kmd6 sx_f85522"></i><i class="_4p25 img sp_CH8VYa8kmd6 sx_e405a2"></i><span class="__text"></span></div></span></span></a>';
-                    save_screenshot.onmouseover = function() { this.classList.add('_54ne'); };
-                    save_screenshot.onmouseout = function() { this.classList.remove('_54ne'); };
-                    save_screenshot.onclick = clickHandler;
-                    function clickHandler() {
-                        save_screenshot.onclick = undefined;
-                        button_text_node.textContent = 'Creating screenshot...'
+                    function createMenuElement(button_text, button_text2) {
+                        let button = document.createElement('li');
+                        button.className = '_54ni _41t6 __MenuItem save_screenshot';
+                        button.role = 'presentation';
+                        let button_a = document.createElement('a');
+                        button_a.className = '_54nc';
+                        button_a.setAttribute('role', 'menuitem');
+                        button_a.title = button_text;
+                        button.appendChild(button_a);
+                        let button_a_span = document.createElement('span');
+                        button_a.appendChild(button_a_span);
+                        let button_a_span_span = document.createElement('span');
+                        button_a_span_span.className = '_54nh';
+                        button_a_span.appendChild(button_a_span_span);
+                        let button_a_span_span_div = document.createElement('div');
+                        button_a_span_span_div.className = '_4p23';
+                        button_a_span_span.appendChild(button_a_span_span_div);
+                        let save_post_i_els = container.querySelector('[ajaxify^="/save"]').querySelectorAll('i');
+                        let button_a_span_span_div_i1 = document.createElement('i');
+                        button_a_span_span_div_i1.className = save_post_i_els[0].className;
+                        let button_a_span_span_div_i2 = document.createElement('i');
+                        button_a_span_span_div.appendChild(button_a_span_span_div_i1);
+                        button_a_span_span_div_i2.className = save_post_i_els[1].className;
+                        button_a_span_span_div.appendChild(button_a_span_span_div_i2);
+                        let button_text_node = document.createTextNode(button_text);
+                        button_a_span_span_div.appendChild(button_text_node);
+                        button.onmouseover = function() { this.classList.add('_54ne'); };
+                        button.onmouseout = function() { this.classList.remove('_54ne'); };
+                        button.toggleText = function() {
+                            if (button_text_node.textContent == button_text) {
+                                button_text_node.textContent = button_text2;
+                            } else {
+                                button_text_node.textContent = button_text;
+                            }
+                        }
+                        return button;
+                    }
+                    let save_screenshot = createMenuElement('Save screenshot', 'Creating screenshot...');
+                    save_screenshot.onclick = clickHandler.bind(save_screenshot, false);
+                    let save_screenshot_anon = createMenuElement('Save anonymized screenshot', 'Creating screenshot...');
+                    save_screenshot_anon.onclick = clickHandler.bind(save_screenshot_anon, true);
+                    function clickHandler(anonymize) {
+                        this.onclick = undefined;
+                        this.toggleText();
                         let post_window = window.open(permalink, 's', 'width=300, height=100, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
                         post.click();
+                        this.toggleText();
+                        this.onclick = clickHandler;
                         function responseCallback(response) {
                             let post_id = permalink.match(/(\d{2,})(?!.*\d{2,})/)[1],
                                 part_nr = 1;
@@ -81,12 +94,11 @@ function callback(mutations) {
                                 a.click();
                                 document.body.removeChild(a);
                             }
-                            button_text_node.textContent = button_text;
-                            save_screenshot.onclick = clickHandler;
                         }
-                        setTimeout(() => { sendMessage(post_window, { type: 'command', command: 'screenshot' }, responseCallback); }, 5000);
+                        setTimeout(() => { sendMessage(post_window, { type: 'command', command: 'screenshot', arguments: [ anonymize ] }, responseCallback); }, 5000);
                     }
                     menu_item.parentNode.insertBefore(save_screenshot, menu_item);
+                    menu_item.parentNode.insertBefore(save_screenshot_anon, menu_item);
                     return;
                 }
             }
@@ -125,7 +137,7 @@ window.addEventListener('message', e => {
                         notice_inner_span.appendChild(document.createTextNode('Do not close any windows!'));
                         notice_outer_div.appendChild(notice_inner_span);
                         document.body.appendChild(notice_outer_div);
-                        screenshotPostInCurrentWindow(image_data_urls => {
+                        screenshotPostInCurrentWindow(data.arguments[0], image_data_urls => {
                             e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_urls: image_data_urls }), origin);
                             window.close();
                         });
@@ -146,7 +158,7 @@ window.addEventListener('message', e => {
     }
 });
 
-function screenshotPostInCurrentWindow(callback) {
+function screenshotPostInCurrentWindow(anonymize, callback) {
     let post = document.querySelector('.fbUserContent'),
         post_wrapper = post.parentNode.parentNode;
     post_wrapper.style = post.style || '';
@@ -190,7 +202,7 @@ function screenshotPostInCurrentWindow(callback) {
         }
     }
 
-    function anonymize() {
+    function anonymizePost() {
         let i = 1,
             profileLinkToAnonymousName = {};
 
@@ -198,7 +210,7 @@ function screenshotPostInCurrentWindow(callback) {
         profileLinkToAnonymousName[extractProfileLink(opEl)] = 'OP';
         opEl.textContent = 'OP';
 
-        for (let nameEl of post.querySelectorAll('.UFICommentActorName, .profileLink')) {
+        for (let nameEl of post.querySelectorAll('.UFICommentActorName, :not(.fcg) > .profileLink, .UFINotice a')) {
             let profileLink = extractProfileLink(nameEl);
             if (!profileLinkToAnonymousName[profileLink]) {
                 profileLinkToAnonymousName[profileLink] = 'Profile ' + i;
@@ -218,6 +230,9 @@ function screenshotPostInCurrentWindow(callback) {
 
         if (reactionsCountStr.length != reactionsText.length) {
             reactionsCountStr = parseInt(reactionsCountStr) + 1;
+            if (reactionsText.indexOf(',') !== -1) {
+                reactionsCountStr += 1;
+            }
         }
         reactionsTextEl.textContent = reactionsCountStr;
 
@@ -240,7 +255,9 @@ function screenshotPostInCurrentWindow(callback) {
             node.parentNode.removeChild(node);
         }
 
-        // anonymize();
+        if (anonymize) {
+            anonymizePost();
+        }
 
         window.scrollTo(0, 0);
         let rect = post_wrapper.getBoundingClientRect(),
