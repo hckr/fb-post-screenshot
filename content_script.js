@@ -190,6 +190,42 @@ function screenshotPostInCurrentWindow(callback) {
         }
     }
 
+    function anonymize() {
+        let i = 1,
+            profileLinkToAnonymousName = {};
+
+        let opEl = document.querySelector('h5 a');
+        profileLinkToAnonymousName[extractProfileLink(opEl)] = 'OP';
+        opEl.textContent = 'OP';
+
+        for (let nameEl of post.querySelectorAll('.UFICommentActorName, .profileLink')) {
+            let profileLink = extractProfileLink(nameEl);
+            if (!profileLinkToAnonymousName[profileLink]) {
+                profileLinkToAnonymousName[profileLink] = 'Profile ' + i;
+                ++i;
+            }
+            nameEl.textContent = profileLinkToAnonymousName[profileLink];
+        }
+
+        for (let avatar of [post.querySelector('img'), ...post.querySelectorAll('.UFIActorImage, .uiList img')]) {
+            avatar.style = (avatar.style || '') + ';filter: blur(3px);';
+        }
+
+        let reactionsTextEl = document.querySelector('._4arz span'),
+            reactionsText = reactionsTextEl.textContent,
+            reactionsCountArr = reactionsText.match(/\d+/),
+            reactionsCountStr = reactionsCountArr ? reactionsCountArr[0] : '0';
+
+        if (reactionsCountStr.length != reactionsText.length) {
+            reactionsCountStr = parseInt(reactionsCountStr) + 1;
+        }
+        reactionsTextEl.textContent = reactionsCountStr;
+
+        function extractProfileLink(a) {
+            return a.href.match(/[^?]+/)[0];
+        }
+    }
+
     unfoldComments(() => {
         // hide theater view:
         let style = document.createElement('style');
@@ -203,6 +239,9 @@ function screenshotPostInCurrentWindow(callback) {
         for (let node of post.querySelectorAll('.UFIAddComment')) {
             node.parentNode.removeChild(node);
         }
+
+        // anonymize();
+
         window.scrollTo(0, 0);
         let rect = post_wrapper.getBoundingClientRect(),
             x = Math.ceil(rect.x),
