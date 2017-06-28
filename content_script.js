@@ -223,18 +223,20 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
             avatar.style = (avatar.style || '') + ';filter: blur(3px);';
         }
 
-        let reactionsTextEl = document.querySelector('._4arz span'),
-            reactionsText = reactionsTextEl.textContent,
-            reactionsCountArr = reactionsText.match(/\d+/),
-            reactionsCountStr = reactionsCountArr ? reactionsCountArr[0] : '0';
+        let reactionsTextEl = document.querySelector('._4arz span');
+        if (reactionsTextEl) {
+            let reactionsText = reactionsTextEl.textContent,
+                reactionsCountArr = reactionsText.match(/\d+/),
+                reactionsCountStr = reactionsCountArr ? reactionsCountArr[0] : '0';
 
-        if (reactionsCountStr.length != reactionsText.length) {
-            reactionsCountStr = parseInt(reactionsCountStr) + 1;
-            if (reactionsText.indexOf(',') !== -1) {
-                reactionsCountStr += 1;
+            if (reactionsCountStr.length != reactionsText.length) {
+                reactionsCountStr = parseInt(reactionsCountStr) + 1;
+                if (reactionsText.indexOf(',') !== -1) {
+                    reactionsCountStr += 1;
+                }
             }
+            reactionsTextEl.textContent = reactionsCountStr;
         }
-        reactionsTextEl.textContent = reactionsCountStr;
 
         function extractProfileLink(a) {
             return a.href.match(/[^?]+/)[0];
