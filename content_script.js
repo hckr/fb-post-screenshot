@@ -239,7 +239,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         }
 
         function extractProfileLink(a) {
-            return a.href.match(/[^?]+/)[0];
+            return a.href.replace(/[?&]fref.+$/, '');
         }
     }
 
