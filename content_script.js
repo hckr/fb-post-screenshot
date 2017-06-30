@@ -81,7 +81,7 @@ function callback(mutations) {
                         this.toggleText();
                         this.onclick = old_onclick;
                         function responseCallback(response) {
-                            let post_id = permalink.match(/(\d{2,})(?!.*\d{2,})/)[1],
+                            let post_id = permalink.replace(/.+permalink/, '').match(/\d{2,}/)[0],
                                 part_nr = 1;
                             for (let image_data_url of response.image_data_urls) {
                                 let a = document.createElement('a');
