@@ -76,7 +76,7 @@ function callback(mutations) {
                         let old_onclick = this.onclick;
                         this.onclick = undefined;
                         this.toggleText();
-                        let post_window = window.open(permalink, 's', 'width=300, height=100, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
+                        let post_window = window.open(permalink, 's', 'width=300, height=100, left=0, top=0, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
                         post.click();
                         this.toggleText();
                         this.onclick = old_onclick;
@@ -96,7 +96,7 @@ function callback(mutations) {
                                 document.body.removeChild(a);
                             }
                         }
-                        setTimeout(() => { sendMessage(post_window, { type: 'command', command: 'screenshot', arguments: [ anonymize ] }, responseCallback); }, 5000);
+                        setTimeout(() => { sendMessage(post_window, { type: 'command', command: 'screenshot', arguments: [ anonymize ] }, responseCallback); }, 8000);
                     }
                     menu_item.parentNode.insertBefore(save_screenshot, menu_item);
                     menu_item.parentNode.insertBefore(save_screenshot_anon, menu_item);
@@ -160,26 +160,24 @@ window.addEventListener('message', e => {
 });
 
 function screenshotPostInCurrentWindow(anonymize, callback) {
-    let post = document.querySelector('.fbUserContent'),
-        post_wrapper = post.parentNode.parentNode;
-    post_wrapper.style = post.style || '';
-    post_wrapper.style += ';postition: relative; left: 200px; z-index: 1000000;';
+    let postWrapper = document.querySelector('.userContentWrapper');
+    postWrapper.style += ';postition: relative; left: 200px; z-index: 1000000;';
 
     let unfoldQueue = [];
 
     function discoverUnfoldLinks() {
-        let pagers = post.querySelectorAll('.UFIPagerLink');
+        let pagers = postWrapper.querySelectorAll('.UFIPagerLink');
         pagers.forEach(node => node.__wait = 1000);
-        let seeMores = post.querySelectorAll('.fss');
+        let seeMores = postWrapper.querySelectorAll('.fss');
         seeMores.forEach(node => node.__wait = 150);
-        let replies = [].filter.call(post.querySelectorAll('.UFICommentLink'), node => {
+        let replies = [].filter.call(postWrapper.querySelectorAll('.UFICommentLink'), node => {
             node.__wait = 1000;
             return node.parentNode.parentNode.childNodes.length == 1;
         });
         unfoldQueue.push(...pagers);
         unfoldQueue.push(...replies);
         unfoldQueue.push(...seeMores);
-        let pollOptions = post.querySelector('._3coo');
+        let pollOptions = postWrapper.querySelector('._3coo');
         if (pollOptions) {
             pollOptions.__wait = 10;
             unfoldQueue.push(pollOptions);
@@ -211,7 +209,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         profileLinkToAnonymousName[extractProfileLink(opEl)] = 'OP';
         opEl.textContent = 'OP';
 
-        for (let nameEl of post.querySelectorAll('.UFICommentActorName, :not(.fcg) > .profileLink, .UFINotice a')) {
+        for (let nameEl of postWrapper.querySelectorAll('.UFICommentActorName, :not(.fcg) > .profileLink, .UFINotice a')) {
             let profileLink = extractProfileLink(nameEl);
             if (!profileLinkToAnonymousName[profileLink]) {
                 profileLinkToAnonymousName[profileLink] = 'Profile ' + i;
@@ -220,7 +218,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
             nameEl.textContent = profileLinkToAnonymousName[profileLink];
         }
 
-        for (let avatar of [post.querySelector('img'), ...post.querySelectorAll('.UFIActorImage, .uiList img')]) {
+        for (let avatar of [postWrapper.querySelector('img'), ...postWrapper.querySelectorAll('.UFIActorImage, .uiList img')]) {
             avatar.style = (avatar.style || '') + ';filter: blur(3px);';
         }
 
@@ -254,7 +252,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         if (commentAsSelector) {
             commentAsSelector.parentNode.removeChild(commentAsSelector);
         }
-        for (let node of post.querySelectorAll('.UFIAddComment')) {
+        for (let node of postWrapper.querySelectorAll('.UFIAddComment')) {
             node.parentNode.removeChild(node);
         }
 
@@ -263,7 +261,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         }
 
         window.scrollTo(0, 0);
-        let rect = post_wrapper.getBoundingClientRect(),
+        let rect = postWrapper.getBoundingClientRect(),
             x = Math.ceil(rect.x),
             y = Math.ceil(rect.y),
             width = Math.ceil(rect.width),
