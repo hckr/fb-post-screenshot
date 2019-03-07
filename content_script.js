@@ -46,7 +46,7 @@ function callback(mutations) {
                         button_a_span_span.className = '_54nh';
                         button_a_span.appendChild(button_a_span_span);
                         let button_a_span_span_div = document.createElement('div');
-                        button_a_span_span_div.className = '_4p23';
+                        button_a_span_span_div.className = '_4p23' + (menu_item.querySelector('._2ezx') ? ' _2ezx' : '');
                         button_a_span_span.appendChild(button_a_span_span_div);
                         let save_post_i_els = container.querySelector('[ajaxify^="/save"]').querySelectorAll('i');
                         let button_a_span_span_div_i1 = document.createElement('i');
@@ -84,16 +84,22 @@ function callback(mutations) {
                             let post_id = permalink.replace(/.+permalink/, '').match(/\d{2,}/)[0],
                                 part_nr = 1;
                             for (let image_data_url of response.image_data_urls) {
-                                let a = document.createElement('a');
-                                a.href = image_data_url;
+                                let file_name;
                                 if (response.image_data_urls.length > 1) {
-                                    a.download = `post-${post_id}-${part_nr++}-of-${response.image_data_urls.length}.jpg`;
+                                    file_name = `post-${post_id}-${part_nr++}-of-${response.image_data_urls.length}.jpg`;
                                 } else {
-                                    a.download = `post-${post_id}.jpg`;
+                                    file_name = `post-${post_id}.jpg`;
                                 }
-                                document.body.appendChild(a);
-                                a.click();
-                                document.body.removeChild(a);
+                                setTimeout((function(data_url, file_name) {
+                                    return function() {
+                                        let a = document.createElement('a');
+                                        a.href = data_url;
+                                        a.download = file_name
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        document.body.removeChild(a);
+                                    }
+                                })(image_data_url, file_name), 100);
                             }
                         }
                         setTimeout(() => { sendMessage(post_window, { type: 'command', command: 'screenshot', arguments: [ anonymize ] }, responseCallback); }, 8000);
@@ -161,20 +167,15 @@ window.addEventListener('message', e => {
 
 function screenshotPostInCurrentWindow(anonymize, callback) {
     let postWrapper = document.querySelector('.userContentWrapper');
-    postWrapper.style += ';postition: relative; left: 200px; z-index: 1000000;';
+    postWrapper.parentNode.parentNode.style += ';position: relative; left: 9999px; z-index: 1000000;';
 
     let unfoldQueue = [];
 
     function discoverUnfoldLinks() {
-        let pagers = postWrapper.querySelectorAll('.UFIPagerLink');
-        pagers.forEach(node => node.__wait = 1000);
         let seeMores = postWrapper.querySelectorAll('.fss');
         seeMores.forEach(node => node.__wait = 150);
-        let replies = [].filter.call(postWrapper.querySelectorAll('.UFICommentLink'), node => {
-            node.__wait = 1000;
-            return node.parentNode.parentNode.childNodes.length == 1;
-        });
-        unfoldQueue.push(...pagers);
+        let replies = postWrapper.querySelectorAll('._4sxc');
+        replies.forEach(node => node.__wait = 1000);
         unfoldQueue.push(...replies);
         unfoldQueue.push(...seeMores);
         let pollOptions = postWrapper.querySelector('._3coo');
@@ -209,7 +210,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         profileLinkToAnonymousName[extractProfileLink(opEl)] = 'OP';
         opEl.textContent = 'OP';
 
-        for (let nameEl of postWrapper.querySelectorAll('.UFICommentActorName, :not(.fcg) > .profileLink, .UFINotice a')) {
+        for (let nameEl of postWrapper.querySelectorAll(':not(.fcg) > .profileLink, ._6qw4, ._3l3x a')) {
             let profileLink = extractProfileLink(nameEl);
             if (!profileLinkToAnonymousName[profileLink]) {
                 profileLinkToAnonymousName[profileLink] = 'Profile ' + i;
@@ -218,11 +219,11 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
             nameEl.textContent = profileLinkToAnonymousName[profileLink];
         }
 
-        for (let avatar of [postWrapper.querySelector('img'), ...postWrapper.querySelectorAll('.UFIActorImage, .uiList img')]) {
+        for (let avatar of [postWrapper.querySelector('img'), ...postWrapper.querySelectorAll('._3mf5')]) {
             avatar.style = (avatar.style || '') + ';filter: blur(3px);';
         }
 
-        let reactionsTextEl = document.querySelector('._4arz span');
+        let reactionsTextEl = document.querySelector('._3dlh span');
         if (reactionsTextEl) {
             let reactionsText = reactionsTextEl.textContent,
                 reactionsCountArr = reactionsText.match(/\d+/),
@@ -238,7 +239,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         }
 
         function extractProfileLink(a) {
-            return a.href.replace(/[?&]fref.+$/, '');
+            return a.href.replace(/[?&]hc_.+$/, '');
         }
     }
 
@@ -248,13 +249,6 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         document.head.appendChild(style);
         style.sheet.insertRule('#photos_snowlift { display: none; }', 0);
         // ------------------
-        let commentAsSelector = document.querySelector('._pbn');
-        if (commentAsSelector) {
-            commentAsSelector.parentNode.removeChild(commentAsSelector);
-        }
-        for (let node of postWrapper.querySelectorAll('.UFIAddComment')) {
-            node.parentNode.removeChild(node);
-        }
 
         if (anonymize) {
             anonymizePost();
@@ -269,7 +263,6 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         let canvas = document.createElement('canvas'),
             ctx = canvas.getContext('2d');
         let maxPartSize = 8192,
-            currentY = y,
             leftHeight = height,
             image_data_urls = [];
         while (leftHeight > 0) {
