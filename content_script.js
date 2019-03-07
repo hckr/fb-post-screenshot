@@ -19,9 +19,9 @@ function callback(mutations) {
                 }
                 let context_layer, menu_arrow, post, permalink;
                 try {
-                    context_layer = findParentWithClass(container, 'uiContextualLayerPositioner'),
-                    menu_arrow = document.getElementById(context_layer.getAttribute('data-ownerid')),
-                    post = findParentWithClass(menu_arrow, 'fbUserContent'),
+                    context_layer = findParentWithEitherClass(container, ['uiContextualLayerPositioner']);
+                    menu_arrow = document.getElementById(context_layer.getAttribute('data-ownerid'));
+                    post = findParentWithEitherClass(menu_arrow, ['userContentWrapper', 'fbPhotoSnowliftContainer']);
                     permalink = post.querySelector('abbr').parentNode.href;
                     if (!permalink) {
                         return;
@@ -33,7 +33,7 @@ function callback(mutations) {
                 if (menu_item) {
                     function createMenuElement(button_text, button_text2) {
                         let button = document.createElement('li');
-                        button.className = '_54ni _41t6 __MenuItem save_screenshot';
+                        button.className = '_54ni _41t6 __MenuItem save_screenshot' + (menu_item.querySelector('._xaa._4i13') ? ' _xaa _4i13' : '');
                         button.role = 'presentation';
                         let button_a = document.createElement('a');
                         button_a.className = '_54nc';
@@ -285,12 +285,14 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
     });
 }
 
-function findParentWithClass(el, klass) {
+function findParentWithEitherClass(el, classes) {
     let cur = el;
     while (cur !== document.documentElement) {
         cur = cur.parentNode;
-        if (cur.classList.contains(klass)) {
-            break;
+        for (let klass of classes) {
+            if (cur.classList.contains(klass)) {
+                return cur;
+            }
         }
     }
     return cur;
