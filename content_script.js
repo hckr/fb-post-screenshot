@@ -136,12 +136,14 @@ window.addEventListener('message', e => {
                     function initScreenshot() {
                         document.querySelector('title').textContent = 'Screenshooting...';
                         let notice_outer_div = document.createElement('div');
-                        notice_outer_div.style = 'position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 5000; color: #acf; background: #138; display: table; width:100%; height:100%; font-size: 24px';
+                        notice_outer_div.style = 'position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 5000; color: #d4e4f1; background: #1e394f; display: table; width:100%; height:100%; font-size: 18px';
                         let notice_inner_span = document.createElement('span');
                         notice_inner_span.style = 'display: table-cell; vertical-align: middle; text-align: center';
                         notice_inner_span.appendChild(document.createTextNode('Please wait...'));
                         notice_inner_span.appendChild(document.createElement('br'));
                         notice_inner_span.appendChild(document.createTextNode('Do not close any windows!'));
+                        notice_inner_span.appendChild(document.createElement('br'));
+                        notice_inner_span.appendChild(document.createTextNode('Working on the screenshot...'));
                         notice_outer_div.appendChild(notice_inner_span);
                         document.body.appendChild(notice_outer_div);
                         screenshotPostInCurrentWindow(data.arguments[0], image_data_urls => {
