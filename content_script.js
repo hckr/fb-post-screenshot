@@ -76,11 +76,18 @@ function callback(mutations) {
                         let old_onclick = this.onclick;
                         this.onclick = undefined;
                         this.toggleText();
-                        let post_window = window.open(permalink, 's', 'width=300, height=100, left=0, top=0, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
+                        let post_window = window.open(permalink, 's', 'width=300, height=100, left=0, top=0, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=no, copyhistory=no');
                         post.click();
                         this.toggleText();
                         this.onclick = old_onclick;
+                        
+                        let received_secret = "";
+                        
                         function responseCallback(response) {
+                            if ('confirmation_secret' in response) {
+                                received_secret = response.confirmation_secret;
+                                return;
+                            }
                             let post_id = permalink.replace(/.+permalink/, '').match(/\d{2,}/)[0],
                                 part_nr = 1;
                             for (let image_data_url of response.image_data_urls) {
@@ -102,7 +109,13 @@ function callback(mutations) {
                                 })(image_data_url, file_name), 100);
                             }
                         }
-                        setTimeout(() => { sendMessage(post_window, { type: 'command', command: 'screenshot', arguments: [ anonymize ] }, responseCallback); }, 8000);
+                        let confirmation_secret = Math.random().toString();
+                        (function try_send_command_until_confirmation_received() {
+                            if (received_secret != confirmation_secret) {
+                                sendMessage(post_window, { type: 'command', command: 'screenshot', arguments: [ anonymize, confirmation_secret ] }, responseCallback);
+                                setTimeout(try_send_command_until_confirmation_received, 1000);
+                            }
+                        })();
                     }
                     menu_item.parentNode.insertBefore(save_screenshot, menu_item);
                     menu_item.parentNode.insertBefore(save_screenshot_anon, menu_item);
@@ -122,6 +135,8 @@ function sendMessage(win, json_data, callback) {
     win.postMessage(JSON.stringify(json_data), 'https://www.facebook.com');
 }
 
+let received_screenshot_command = false;
+
 window.addEventListener('message', e => {
     let origin = e.origin || e.originalEvent.origin;
     if (origin !== 'https://www.facebook.com')
@@ -133,6 +148,10 @@ window.addEventListener('message', e => {
         case 'command':
             switch (data.command) {
                 case 'screenshot':
+                    if (received_screenshot_command) {
+                        break;
+                    }
+                    received_screenshot_command = true;
                     function initScreenshot() {
                         document.querySelector('title').textContent = 'Screenshooting...';
                         let notice_outer_div = document.createElement('div');
@@ -143,9 +162,13 @@ window.addEventListener('message', e => {
                         notice_inner_span.appendChild(document.createElement('br'));
                         notice_inner_span.appendChild(document.createTextNode('Do not close any windows!'));
                         notice_inner_span.appendChild(document.createElement('br'));
-                        notice_inner_span.appendChild(document.createTextNode('Working on the screenshot...'));
+                        let status_span = document.createElement('span');
+                        status_span.style = 'font-size: 12px';
+                        status_span.innerHTML = 'Status: clicked <span id="__fb_post_screenshot_status_clicks_made">0</span> times, at least <span id="__fb_post_screenshot_status_clicks_more">0</span> more clicks...';
+                        notice_inner_span.appendChild(status_span);
                         notice_outer_div.appendChild(notice_inner_span);
                         document.body.appendChild(notice_outer_div);
+                        e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, confirmation_secret: data.arguments[1] }), origin);
                         screenshotPostInCurrentWindow(data.arguments[0], image_data_urls => {
                             e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_urls: image_data_urls }), origin);
                             window.close();
@@ -161,25 +184,34 @@ window.addEventListener('message', e => {
         case 'response':
             if (data.id in callbacks) {
                 callbacks[data.id](data);
-                delete callbacks[data.id];
+                // delete callbacks[data.id];
             }
             break;
     }
 });
 
 function screenshotPostInCurrentWindow(anonymize, callback) {
+    // hide theater view:
+    let style = document.createElement('style');
+    document.head.appendChild(style);
+    style.sheet.insertRule('#photos_snowlift { display: none; }', 0);
+    // ------------------
+    
     let postWrapper = document.querySelector('.userContentWrapper');
-    postWrapper.parentNode.parentNode.style += ';position: relative; left: 9999px; z-index: 1000000;';
+    postWrapper.parentNode.parentNode.style += ';position: relative; top: 200px; z-index: 1000000;';
 
     let unfoldQueue = [];
 
     function discoverUnfoldLinks() {
+        let pagers = postWrapper.querySelectorAll('.UFIPagerLink');
+        pagers.forEach(node => node.__wait = 1000);
         let seeMores = postWrapper.querySelectorAll('.fss');
         seeMores.forEach(node => node.__wait = 150);
         let replies = postWrapper.querySelectorAll('._4sxc');
         replies.forEach(node => node.__wait = 1000);
-        unfoldQueue.push(...replies);
+        unfoldQueue.push(...pagers);
         unfoldQueue.push(...seeMores);
+        unfoldQueue.push(...replies);
         let pollOptions = postWrapper.querySelector('._3coo');
         if (pollOptions) {
             pollOptions.__wait = 10;
@@ -195,9 +227,13 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
     }
 
     function unfoldComments2(callback) {
+        let clicks_made = document.querySelector('#__fb_post_screenshot_status_clicks_made'),
+            clicks_more = document.querySelector('#__fb_post_screenshot_status_clicks_more');
+            clicks_more.innerText = unfoldQueue.length;
         if (unfoldQueue.length) {
             let node = unfoldQueue.pop();
             node.click();
+            clicks_made.innerText = parseInt(clicks_made.innerText) + 1;
             setTimeout(unfoldComments, node.__wait, callback);
         } else {
             setTimeout(callback, 150);
@@ -246,12 +282,6 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
     }
 
     unfoldComments(() => {
-        // hide theater view:
-        let style = document.createElement('style');
-        document.head.appendChild(style);
-        style.sheet.insertRule('#photos_snowlift { display: none; }', 0);
-        // ------------------
-
         if (anonymize) {
             anonymizePost();
         }
