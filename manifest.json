@@ -2,7 +2,7 @@
     "description": "Web Extension to save Facebook posts as images",
     "manifest_version": 2,
     "name": "Facebook Post Screenshot",
-    "version": "1.6.1",
+    "version": "1.6.2",
     "homepage_url": "https://github.com/hckr/fb-post-screenshot",
     "icons": {
         "48": "icons/icon-48.png"

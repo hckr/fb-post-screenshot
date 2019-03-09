@@ -76,7 +76,7 @@ function callback(mutations) {
                         let old_onclick = this.onclick;
                         this.onclick = undefined;
                         this.toggleText();
-                        let post_window = window.open(permalink, 's', 'width=300, height=100, left=0, top=0, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=no, copyhistory=no');
+                        let post_window = window.open(permalink, 's', 'width=300, height=100, left=0, top=0, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
                         post.click();
                         this.toggleText();
                         this.onclick = old_onclick;
