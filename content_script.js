@@ -82,7 +82,7 @@ function callback(mutations) {
                         this.onclick = old_onclick;
                         
                         let received_secret = "";
-                        
+
                         function responseCallback(response) {
                             if ('confirmation_secret' in response) {
                                 received_secret = response.confirmation_secret;
@@ -97,16 +97,10 @@ function callback(mutations) {
                                 } else {
                                     file_name = `post-${post_id}.jpg`;
                                 }
-                                setTimeout((function(data_url, file_name) {
-                                    return function() {
-                                        let a = document.createElement('a');
-                                        a.href = data_url;
-                                        a.download = file_name
-                                        document.body.appendChild(a);
-                                        a.click();
-                                        document.body.removeChild(a);
-                                    }
-                                })(image_data_url, file_name), 100);
+                                browser.runtime.sendMessage({
+                                    data_uri: image_data_url,
+                                    filename: file_name
+                                });
                             }
                         }
                         let confirmation_secret = Math.random().toString();
@@ -171,7 +165,8 @@ window.addEventListener('message', e => {
                         e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, confirmation_secret: data.arguments[1] }), origin);
                         screenshotPostInCurrentWindow(data.arguments[0], image_data_urls => {
                             e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_urls: image_data_urls }), origin);
-                            window.close();
+                            notice_inner_span.innerText = "Finished. Saving in Downloads...";
+                            setTimeout(window.close, 3000);
                         });
                     }
                     window.addEventListener('load', initScreenshot);
