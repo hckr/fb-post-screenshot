@@ -8,9 +8,23 @@ function dataURItoBlob(dataURI) {
   return new Blob([new Uint8Array(array)], {type: mime});
 }
 
-browser.runtime.onMessage.addListener(({data_uri, filename}) => {
+let objectURLs = new Map(); // id => objectURL
+
+browser.runtime.onMessage.addListener(data => {
+    let objectURL = URL.createObjectURL(dataURItoBlob(data.data_uri));
     browser.downloads.download({
-        url: URL.createObjectURL(dataURItoBlob(data_uri)),
-        filename: filename
+        url: objectURL,
+        filename: data.filename
+    }).then(id => {
+        objectURLs.set(id, objectURL);
+    }).catch(_ => {
+        URL.revokeObjectURL(objectURL);
     });
+});
+
+browser.downloads.onChanged.addListener(delta => {
+    if (objectURLs.has(delta.id) && delta.state.current == 'complete') {
+        URL.revokeObjectURL(objectURLs.get(delta.id));
+        objectURLs.delete(delta.id);
+    }
 });

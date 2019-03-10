@@ -6,6 +6,20 @@ observer.observe(document.documentElement, {
     subtree: true
 });
 
+let infobox = document.createElement('div'),
+    infobox_timeout = null;
+
+infobox.style = 'position: fixed; top: 50px; left: calc(50% - 150px); border-radius: 3px; width: 300px; padding: 10px 10px 5px; font-size: 14px; text-align: center; background-color: #d4e4f1; color: #1e394f; z-index: 1000; transition: .5s opacity ease-in;';
+infobox.style.opacity = 0;
+document.body.appendChild(infobox);
+
+function showInfoBox(msg) {
+    infobox.innerText = msg;
+    infobox.style.opacity = 1;
+    clearTimeout(infobox_timeout);
+    infobox_timeout = setTimeout(_ => infobox.style.opacity = 0, 5000);
+}
+
 function callback(mutations) {
     for (let mutation of mutations) {
         for (let node of mutation.addedNodes) {
@@ -90,6 +104,9 @@ function callback(mutations) {
                             }
                             let post_id = permalink.replace(/.+permalink/, '').match(/\d{2,}/)[0],
                                 part_nr = 1;
+                            
+                            showInfoBox(`Saving screenshot of post ${post_id}...`);                            
+                            
                             for (let image_data_url of response.image_data_urls) {
                                 let file_name;
                                 if (response.image_data_urls.length > 1) {
@@ -165,8 +182,7 @@ window.addEventListener('message', e => {
                         e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, confirmation_secret: data.arguments[1] }), origin);
                         screenshotPostInCurrentWindow(data.arguments[0], image_data_urls => {
                             e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_urls: image_data_urls }), origin);
-                            notice_inner_span.innerText = "Finished. Saving in Downloads...";
-                            setTimeout(window.close, 3000);
+                            window.close();
                         });
                     }
                     window.addEventListener('load', initScreenshot);
