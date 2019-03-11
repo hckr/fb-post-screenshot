@@ -209,7 +209,6 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
     // ------------------
     
     let postWrapper = document.querySelector('.userContentWrapper');
-    postWrapper.parentNode.parentNode.style += ';position: relative; top: 200px; z-index: 1000000;';
 
     let unfoldQueue = [];
 
@@ -218,7 +217,8 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         pagers.forEach(node => node.__wait = 1000);
         let seeMores = postWrapper.querySelectorAll('.fss');
         seeMores.forEach(node => node.__wait = 150);
-        let replies = postWrapper.querySelectorAll('._4sxc');
+        let replies = [].filter.call(postWrapper.querySelectorAll('._4sxc, .UFIReplyList .UFICommentLink'),
+                                     node => !node.querySelector('.UFICollapseIcon'));
         replies.forEach(node => node.__wait = 1000);
         unfoldQueue.push(...pagers);
         unfoldQueue.push(...seeMores);
@@ -259,7 +259,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         profileLinkToAnonymousName[extractProfileLink(opEl)] = 'OP';
         opEl.textContent = 'OP';
 
-        for (let nameEl of postWrapper.querySelectorAll(':not(.fcg) > .profileLink, ._6qw4, ._3l3x a')) {
+        for (let nameEl of postWrapper.querySelectorAll(':not(.fcg) > .profileLink, ._6qw4, ._3l3x a, .UFICommentActorName')) {
             let profileLink = extractProfileLink(nameEl);
             if (!profileLinkToAnonymousName[profileLink]) {
                 profileLinkToAnonymousName[profileLink] = 'Profile ' + i;
@@ -268,7 +268,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
             nameEl.textContent = profileLinkToAnonymousName[profileLink];
         }
 
-        for (let avatar of [postWrapper.querySelector('img'), ...postWrapper.querySelectorAll('._3mf5')]) {
+        for (let avatar of [postWrapper.querySelector('img'), ...postWrapper.querySelectorAll('._3mf5, .UFIActorImage')]) {
             avatar.style = (avatar.style || '') + ';filter: blur(3px);';
         }
 
@@ -296,33 +296,36 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         if (anonymize) {
             anonymizePost();
         }
+        
+        postWrapper.parentNode.parentNode.style += ';position: relative; top: 200px; z-index: 1000000;';
+        setTimeout(_ => {
+            window.scrollTo(0, 0);
+            let rect = postWrapper.getBoundingClientRect(),
+                x = Math.ceil(rect.x),
+                y = Math.ceil(rect.y),
+                width = Math.ceil(rect.width),
+                height = Math.ceil(rect.height);
+            let canvas = document.createElement('canvas'),
+                ctx = canvas.getContext('2d');
+            let maxPartSize = 8192,
+                leftHeight = height,
+                image_data_urls = [];
+            while (leftHeight > 0) {
+                let partHeight = leftHeight;
+                if (leftHeight > maxPartSize) {
+                    partHeight = maxPartSize;
+                }
 
-        window.scrollTo(0, 0);
-        let rect = postWrapper.getBoundingClientRect(),
-            x = Math.ceil(rect.x),
-            y = Math.ceil(rect.y),
-            width = Math.ceil(rect.width),
-            height = Math.ceil(rect.height);
-        let canvas = document.createElement('canvas'),
-            ctx = canvas.getContext('2d');
-        let maxPartSize = 8192,
-            leftHeight = height,
-            image_data_urls = [];
-        while (leftHeight > 0) {
-            let partHeight = leftHeight;
-            if (leftHeight > maxPartSize) {
-                partHeight = maxPartSize;
+                canvas.width = width;
+                canvas.height = partHeight;
+                ctx.drawWindow(window, x, y, width, partHeight, 'rgb(255,255,255)');
+                image_data_urls.push(canvas.toDataURL('image/jpeg', 0.95));
+
+                y += partHeight;
+                leftHeight -= partHeight;
             }
-
-            canvas.width = width;
-            canvas.height = partHeight;
-            ctx.drawWindow(window, x, y, width, partHeight, 'rgb(255,255,255)');
-            image_data_urls.push(canvas.toDataURL('image/jpeg', 0.95));
-
-            y += partHeight;
-            leftHeight -= partHeight;
-        }
-        callback(image_data_urls);
+            callback(image_data_urls);
+        });
     });
 }
 
