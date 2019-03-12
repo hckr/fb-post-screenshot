@@ -164,7 +164,7 @@ window.addEventListener('message', e => {
                     }
                     received_screenshot_command = true;
                     function initScreenshot() {
-                        document.querySelector('title').textContent = 'Screenshooting...';
+                        window.title = 'Screenshooting...';
                         let notice_outer_div = document.createElement('div');
                         notice_outer_div.style = 'position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 5000; color: #d4e4f1; background: #1e394f; display: table; width:100%; height:100%; font-size: 18px';
                         let notice_inner_span = document.createElement('span');
@@ -209,6 +209,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
     // ------------------
     
     let postWrapper = document.querySelector('.userContentWrapper');
+    findParentWithEitherClass(postWrapper, 'feed').style += ';position: relative; left: 1000px; background: white; z-index: 1000000;';
 
     let unfoldQueue = [];
 
@@ -256,11 +257,11 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
             profileLinkToAnonymousName = {};
 
         let opEl = document.querySelector('h5 a');
-        profileLinkToAnonymousName[extractProfileLink(opEl)] = 'OP';
+        profileLinkToAnonymousName[extractProfileId(opEl)] = 'OP';
         opEl.textContent = 'OP';
 
         for (let nameEl of postWrapper.querySelectorAll(':not(.fcg) > .profileLink, ._6qw4, ._3l3x a, .UFICommentActorName')) {
-            let profileLink = extractProfileLink(nameEl);
+            let profileLink = extractProfileId(nameEl);
             if (!profileLinkToAnonymousName[profileLink]) {
                 profileLinkToAnonymousName[profileLink] = 'Profile ' + i;
                 ++i;
@@ -287,8 +288,10 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
             reactionsTextEl.textContent = reactionsCountStr;
         }
 
-        function extractProfileLink(a) {
-            return a.href.replace(/[?&]hc_.+$/, '');
+        function extractProfileId(a) {
+            let oldFormat = /profile.php\?id=([0-9]+)/,
+                newFormat = /com\/([^?]+?)(?:\?|\/|$)/;
+            return (a.href.match(oldFormat) || a.href.match(newFormat) || '  ')[1];
         }
     }
 
@@ -296,8 +299,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         if (anonymize) {
             anonymizePost();
         }
-        
-        postWrapper.parentNode.parentNode.style += ';position: relative; top: 200px; z-index: 1000000;';
+
         setTimeout(_ => {
             window.scrollTo(0, 0);
             let rect = postWrapper.getBoundingClientRect(),
