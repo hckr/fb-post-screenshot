@@ -9,7 +9,7 @@ observer.observe(document.documentElement, {
 let infobox = document.createElement('div'),
     infobox_timeout = null;
 
-infobox.style = 'position: fixed; top: 50px; left: calc(50% - 150px); border-radius: 3px; width: 350px; font-height: 30px; height: 30px; font-size: 14px; text-align: center; background-color: #d4e4f1; color: #1e394f; z-index: 1000; transition: .5s opacity ease-in;';
+infobox.style = 'position: fixed; top: 50px; left: calc(50% - 150px); border-radius: 3px; width: 350px; padding: 8px 5px 5px; font-size: 14px; text-align: center; background-color: #d4e4f1; color: #1e394f; z-index: 1000; transition: .5s opacity ease-in;';
 infobox.style.display = 'none';
 infobox.style.opacity = 0;
 document.body.appendChild(infobox);
@@ -315,7 +315,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
                 height = Math.ceil(rect.height);
             let canvas = document.createElement('canvas'),
                 ctx = canvas.getContext('2d');
-            let maxPartSize = 8192,
+            let maxPartSize = options.maxHeight,
                 leftHeight = height,
                 image_data_urls = [];
             while (leftHeight > 0) {

@@ -11,6 +11,7 @@
         #quality-label { transition: .3s opacity ease-in; opacity: 0; }
         #quality-label.visible { opacity: 1; }
         #quality { width: 70px; }
+        #max-height { width: 100px; }
     </style>
 </head>
 <body>
@@ -23,6 +24,12 @@
                     <option value="image/jpeg">JPEG</option>
                 </select>
                 <label id="quality-label">– quality: <input id="quality" type="number" min="0" max="1" step="0.01" required> (0–1)</label>
+            </div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-row-label"><label for="max-height">Maximum height of a part:</label></div>
+            <div class="detail-row-value">
+                <label><input id="max-height" type="number" min="500" max="16000" step="1" required> px</label>
             </div>
         </div>
     </div>
