@@ -266,7 +266,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         profileLinkToAnonymousName[extractProfileId(opEl)] = 'OP';
         opEl.textContent = 'OP';
 
-        for (let nameEl of postWrapper.querySelectorAll(':not(.fcg) > .profileLink, ._6qw4, .UFICommentActorName')) {
+        for (let nameEl of postWrapper.querySelectorAll(':not(.fcg) > .profileLink, ._6qw4, .UFICommentActorName, ._3l3x a[data-hovercard]')) {
             let profileLink = extractProfileId(nameEl);
             if (!profileLinkToAnonymousName[profileLink]) {
                 profileLinkToAnonymousName[profileLink] = 'Profile ' + i;
