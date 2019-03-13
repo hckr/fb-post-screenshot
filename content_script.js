@@ -1,6 +1,10 @@
 (function(){
 
-let observer = new MutationObserver(callback);
+for (let button of document.querySelectorAll('.save_screenshot, .fb_post_screenshot_infobox')) {
+    button.parentNode.removeChild(button);
+}
+
+let observer = new MutationObserver(observerCallback);
 observer.observe(document.documentElement, {
     childList: true,
     subtree: true
@@ -9,6 +13,7 @@ observer.observe(document.documentElement, {
 let infobox = document.createElement('div'),
     infobox_timeout = null;
 
+infobox.className = 'fb_post_screenshot_infobox'
 infobox.style = 'position: fixed; top: 50px; left: calc(50% - 150px); border-radius: 3px; width: 350px; padding: 8px 5px 5px; font-size: 14px; text-align: center; background-color: #d4e4f1; color: #1e394f; z-index: 1000; transition: .5s opacity ease-in;';
 infobox.style.display = 'none';
 infobox.style.opacity = 0;
@@ -25,7 +30,7 @@ function showInfoBox(msg) {
     }, 5000);
 }
 
-function callback(mutations) {
+function observerCallback(mutations) {
     for (let mutation of mutations) {
         for (let node of mutation.addedNodes) {
             if (!node.querySelector) {
