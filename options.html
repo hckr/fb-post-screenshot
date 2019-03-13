@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-size: 1.11em; }
+        input, select { font-size: 1em; font-family: inherit; }
+        .detail-row { clear: both; line-height: 50px; min-height: 50px; border-top: 1px solid rgba(12, 12, 13, 0.3); text-shadow: 0 1px 1px #fefffe; }
+        .detail-row-label, .detail-row-value { float: left; }
+        .detail-row-label { width: 250px; margin-left: 6px; }
+        #quality-label { transition: .3s opacity ease-in; opacity: 0; }
+        #quality-label.visible { opacity: 1; }
+        #quality { width: 70px; }
+    </style>
+</head>
+<body>
+    <div class="detail-rows">
+        <div class="detail-row">
+            <div class="detail-row-label"><label for="format">Screenshot format:</label></div>
+            <div class="detail-row-value">
+                <select id="format" class="browser-style">
+                    <option value="image/png">PNG (lossless)</option>
+                    <option value="image/jpeg">JPEG</option>
+                </select>
+                <label id="quality-label">– quality: <input id="quality" type="number" min="0" max="1" step="0.01" required> (0–1)</label>
+            </div>
+        </div>
+    </div>
+    <script src="options.js"></script>
+</body>
+</html>

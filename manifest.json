@@ -14,14 +14,19 @@
         }
     ],
     "background": {
-        "scripts": [ "background.js" ]
+        "scripts": [ "storage_defaults.js", "background.js" ]
+    },
+    "options_ui": {
+        "page": "options.html"
     },
     "permissions": [
         "<all_urls>",
-        "downloads"
+        "downloads",
+        "storage"
     ],
     "applications": {
         "gecko": {
+            "id": "{ba702296-2817-46a3-a08d-d7aaf194b9ba}",
             "strict_min_version": "54.0"
         }
     }

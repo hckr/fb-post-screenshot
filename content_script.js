@@ -9,15 +9,20 @@ observer.observe(document.documentElement, {
 let infobox = document.createElement('div'),
     infobox_timeout = null;
 
-infobox.style = 'position: fixed; top: 50px; left: calc(50% - 150px); border-radius: 3px; width: 300px; padding: 10px 10px 5px; font-size: 14px; text-align: center; background-color: #d4e4f1; color: #1e394f; z-index: 1000; transition: .5s opacity ease-in;';
+infobox.style = 'position: fixed; top: 50px; left: calc(50% - 150px); border-radius: 3px; width: 350px; font-height: 30px; height: 30px; font-size: 14px; text-align: center; background-color: #d4e4f1; color: #1e394f; z-index: 1000; transition: .5s opacity ease-in;';
+infobox.style.display = 'none';
 infobox.style.opacity = 0;
 document.body.appendChild(infobox);
 
 function showInfoBox(msg) {
     infobox.innerText = msg;
+    infobox.style.display = 'block';
     infobox.style.opacity = 1;
     clearTimeout(infobox_timeout);
-    infobox_timeout = setTimeout(_ => infobox.style.opacity = 0, 5000);
+    infobox_timeout = setTimeout(_ => {
+        infobox.style.opacity = 0;
+        setTimeout(_ => infobox.style.display = 'none', 600);
+    }, 5000);
 }
 
 function callback(mutations) {
@@ -108,15 +113,16 @@ function callback(mutations) {
                             showInfoBox(`Saving screenshot of post ${post_id}...`);                            
                             
                             for (let image_data_url of response.image_data_urls) {
-                                let file_name;
+                                let filename;
                                 if (response.image_data_urls.length > 1) {
-                                    file_name = `post-${post_id}-${part_nr++}-of-${response.image_data_urls.length}.jpg`;
+                                    filename = `post-${post_id}-${part_nr++}-of-${response.image_data_urls.length}`;
                                 } else {
-                                    file_name = `post-${post_id}.jpg`;
+                                    filename = `post-${post_id}`;
                                 }
                                 browser.runtime.sendMessage({
+                                    command: 'download',
                                     data_uri: image_data_url,
-                                    filename: file_name
+                                    filename: filename
                                 });
                             }
                         }
@@ -299,8 +305,8 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         if (anonymize) {
             anonymizePost();
         }
-
-        setTimeout(_ => {
+        
+        browser.storage.local.get().then(options => {
             window.scrollTo(0, 0);
             let rect = postWrapper.getBoundingClientRect(),
                 x = Math.ceil(rect.x),
@@ -321,7 +327,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
                 canvas.width = width;
                 canvas.height = partHeight;
                 ctx.drawWindow(window, x, y, width, partHeight, 'rgb(255,255,255)');
-                image_data_urls.push(canvas.toDataURL('image/jpeg', 0.95));
+                image_data_urls.push(canvas.toDataURL(options.format, options.quality));
 
                 y += partHeight;
                 leftHeight -= partHeight;

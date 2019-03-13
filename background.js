@@ -1,20 +1,11 @@
-function dataURItoBlob(dataURI) {
-  var mime = dataURI.split(',')[0].split(':')[1].split(';')[0];
-  var binary = atob(dataURI.split(',')[1]);
-  var array = [];
-  for (var i = 0; i < binary.length; i++) {
-     array.push(binary.charCodeAt(i));
-  }
-  return new Blob([new Uint8Array(array)], {type: mime});
-}
-
 let objectURLs = new Map(); // id => objectURL
 
 browser.runtime.onMessage.addListener(data => {
-    let objectURL = URL.createObjectURL(dataURItoBlob(data.data_uri));
+    let blob = dataURItoBlob(data.data_uri),
+        objectURL = URL.createObjectURL(blob);
     browser.downloads.download({
         url: objectURL,
-        filename: data.filename
+        filename: appendExtension(data.filename, blob.type)
     }).then(id => {
         objectURLs.set(id, objectURL);
     }).catch(_ => {
@@ -28,3 +19,26 @@ browser.downloads.onChanged.addListener(delta => {
         objectURLs.delete(delta.id);
     }
 });
+
+function appendExtension(filename, mimetype) {
+    let ext = '';
+    switch (mimetype) {
+        case 'image/png':
+            ext = '.png';
+            break;
+        case 'image/jpeg':
+            ext = '.jpg';
+            break;
+    }
+    return filename + ext
+}
+
+function dataURItoBlob(dataURI) {
+    let mime = dataURI.split(',')[0].split(':')[1].split(';')[0],
+        binary = atob(dataURI.split(',')[1]),
+        array = [];
+    for (let i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i));
+    }
+    return new Blob([ new Uint8Array(array) ], { type: mime });
+}
