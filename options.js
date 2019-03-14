@@ -1,3 +1,5 @@
+document.getElementById('new-issue').onclick = _ => window.open('https://github.com/hckr/fb-post-screenshot/issues/new');
+
 let formatSelect = document.getElementById('format'),
     qualityLabel = document.getElementById('quality-label'),
     qualityInput = document.getElementById('quality'),

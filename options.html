@@ -6,7 +6,7 @@
         body { font-size: 1.11em; }
         input, select { font-size: 1em; font-family: inherit; }
         .detail-row { clear: both; line-height: 50px; min-height: 50px; border-top: 1px solid rgba(12, 12, 13, 0.3); text-shadow: 0 1px 1px #fefffe; }
-        .detail-row.no-border { border-top: none; line-height: auto; height: auto; display: inline-block; margin-top: -20px; }
+        .detail-row.special { border-top: none; line-height: auto; height: auto; position: relative; top: -20px; }
         .detail-row-label, .detail-row-value { float: left; }
         .detail-row-label { width: 250px; }
         .detail-row-label, .detail-row-single { margin-left: 6px; }
@@ -14,6 +14,9 @@
         #quality-label.visible { opacity: 1; }
         #quality { width: 70px; }
         #max-height { width: 100px; }
+        fieldset { font-style: italic; padding: 10px 15px; min-height: 100px; position: relative; }
+        fieldset button { position: absolute; right: 15px; bottom: 10px; font: inherit; background: #e6e6e6; color: black; font-style: normal; min-height: 30px; min-width: 200px; text-align: center; border: none; }
+        fieldset button:hover { background: #cecece; }
     </style>
 </head>
 <body>
@@ -34,11 +37,18 @@
                 <label><input id="max-height" class="browser-style" type="number" min="500" max="16000" step="1" required> px</label>
             </div>
         </div>
-        <div class="detail-row no-border">
+        <div class="detail-row special">
             <div class="detail-row-single">
                 <label><input id="prevent-cutting" type="checkbox" class="browser-style"> prevent ending a part in the middle of a comment</label>
             </div>
         </div>
+        <form>
+            <fieldset>
+                Do you have any suggestions? Does something not work?<br>
+                I'll be happy to help you! 
+                <button id="new-issue" class="browser-style">💖 File an issue on GitHub</button>
+            </fieldset>
+        </form>
     </div>
     <script src="options.js"></script>
 </body>
