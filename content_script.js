@@ -281,7 +281,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
             nameEl.textContent = profileLinkToAnonymousName[profileLink];
         }
 
-        for (let avatar of [postWrapper.querySelector('img'), ...postWrapper.querySelectorAll('._3mf5, .UFIActorImage')]) {
+        for (let avatar of [postWrapper.querySelector('img'), ...postWrapper.querySelectorAll('._3mf5, .UFIActorImage, a[data-hovercard] img')]) {
             avatar.style = (avatar.style || '') + ';filter: blur(3px);';
         }
 
