@@ -43,9 +43,9 @@ function observerCallback(mutations) {
                 }
                 let context_layer, menu_arrow, post, permalink;
                 try {
-                    context_layer = findParentWithEitherClass(container, ['uiContextualLayerPositioner']);
+                    context_layer = container.closest('.uiContextualLayerPositioner');
                     menu_arrow = document.getElementById(context_layer.getAttribute('data-ownerid'));
-                    post = findParentWithEitherClass(menu_arrow, ['userContentWrapper', 'fbPhotoSnowliftContainer']);
+                    post = menu_arrow.closest('.userContentWrapper, .fbPhotoSnowliftContainer');
                     permalink = post.querySelector('abbr').parentNode.href;
                     if (!permalink) {
                         return;
@@ -219,8 +219,9 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
     style.sheet.insertRule('#photos_snowlift { display: none; }', 0);
     // ------------------
     
-    let postWrapper = document.querySelector('.userContentWrapper');
-    findParentWithEitherClass(postWrapper, 'feed').style += ';position: relative; left: 1000px; background: white; z-index: 1000000;';
+    let postWrapper = document.querySelector('.userContentWrapper'),
+        feed = postWrapper.closest('[role=feed]');
+    feed.style += ';position: relative; top: 0px; left: 1000px; background: white; z-index: 1000000;';
 
     let unfoldQueue = [];
 
@@ -318,6 +319,15 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
                 y = Math.ceil(rect.y),
                 width = Math.ceil(rect.width),
                 height = Math.ceil(rect.height);
+            if (options.preventCutting) {
+                postWrapper.style.width = `${width}px`;
+                feed.style.position = 'absolute';
+                feed.style.left = '0px';
+                document.body.appendChild(feed);
+                rect = postWrapper.getBoundingClientRect();
+                x = Math.ceil(rect.x);
+                y = Math.ceil(rect.y);
+            }
             let canvas = document.createElement('canvas'),
                 ctx = canvas.getContext('2d');
             let maxPartSize = options.maxHeight,
@@ -327,6 +337,18 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
                 let partHeight = leftHeight;
                 if (leftHeight > maxPartSize) {
                     partHeight = maxPartSize;
+                    
+                    if (options.preventCutting) {
+                        window.scrollTo(0, y + partHeight - 10);
+                        let cutThroughComment = document.elementFromPoint(100, 10).closest('li');
+                        if (cutThroughComment) {
+                            window.scrollTo(0, 0);
+                            newPartHeight = cutThroughComment.getBoundingClientRect().y - y;
+                            if (newPartHeight > 0) {
+                                partHeight = newPartHeight;
+                            }
+                        }
+                    }
                 }
 
                 canvas.width = width;
@@ -340,19 +362,6 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
             callback(image_data_urls);
         });
     });
-}
-
-function findParentWithEitherClass(el, classes) {
-    let cur = el;
-    while (cur !== document.documentElement) {
-        cur = cur.parentNode;
-        for (let klass of classes) {
-            if (cur.classList.contains(klass)) {
-                return cur;
-            }
-        }
-    }
-    return cur;
 }
 
 })();

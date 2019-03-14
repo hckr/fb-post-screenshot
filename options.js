@@ -1,9 +1,10 @@
 let formatSelect = document.getElementById('format'),
     qualityLabel = document.getElementById('quality-label'),
     qualityInput = document.getElementById('quality'),
-    maxHeightInput = document.getElementById('max-height');
+    maxHeightInput = document.getElementById('max-height'),
+    preventCuttingCheckbox = document.getElementById('prevent-cutting');
 
-for (let [el, ev] of [[formatSelect, 'change'], [qualityInput, 'input'], [maxHeightInput, 'input']]) {
+for (let [el, ev] of [[formatSelect, 'change'], [qualityInput, 'input'], [maxHeightInput, 'input'], [preventCuttingCheckbox, 'change']]) {
     el.addEventListener(ev, _ => {
         saveValues();
         updateQualityVisibility();
@@ -13,7 +14,10 @@ for (let [el, ev] of [[formatSelect, 'change'], [qualityInput, 'input'], [maxHei
 restoreValues();
 
 function saveValues() {
-    browser.storage.local.set({ format: formatSelect.value });
+    browser.storage.local.set({
+        format: formatSelect.value,
+        preventCutting: preventCuttingCheckbox.checked
+    });
     if(qualityInput.checkValidity()) {
         browser.storage.local.set({ quality: parseFloat(qualityInput.value) });
     }
@@ -27,6 +31,7 @@ function restoreValues() {
         formatSelect.value = values.format;
         qualityInput.value = values.quality;
         maxHeightInput.value = values.maxHeight;
+        preventCuttingCheckbox.checked = values.preventCutting;
         setTimeout(updateQualityVisibility, 50);
     });
 }

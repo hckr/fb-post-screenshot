@@ -6,8 +6,10 @@
         body { font-size: 1.11em; }
         input, select { font-size: 1em; font-family: inherit; }
         .detail-row { clear: both; line-height: 50px; min-height: 50px; border-top: 1px solid rgba(12, 12, 13, 0.3); text-shadow: 0 1px 1px #fefffe; }
+        .detail-row.no-border { border-top: none; line-height: auto; height: auto; display: inline-block; margin-top: -20px; }
         .detail-row-label, .detail-row-value { float: left; }
-        .detail-row-label { width: 250px; margin-left: 6px; }
+        .detail-row-label { width: 250px; }
+        .detail-row-label, .detail-row-single { margin-left: 6px; }
         #quality-label { transition: .3s opacity ease-in; opacity: 0; }
         #quality-label.visible { opacity: 1; }
         #quality { width: 70px; }
@@ -23,13 +25,18 @@
                     <option value="image/png">PNG (lossless)</option>
                     <option value="image/jpeg">JPEG</option>
                 </select>
-                <label id="quality-label">– quality: <input id="quality" type="number" min="0" max="1" step="0.01" required> (0–1)</label>
+                <label id="quality-label">– quality: <input id="quality" class="browser-style" type="number" min="0" max="1" step="0.01" required> (0–1)</label>
             </div>
         </div>
         <div class="detail-row">
             <div class="detail-row-label"><label for="max-height">Maximum height of a part:</label></div>
             <div class="detail-row-value">
-                <label><input id="max-height" type="number" min="500" max="16000" step="1" required> px</label>
+                <label><input id="max-height" class="browser-style" type="number" min="500" max="16000" step="1" required> px</label>
+            </div>
+        </div>
+        <div class="detail-row no-border">
+            <div class="detail-row-single">
+                <label><input id="prevent-cutting" type="checkbox" class="browser-style"> prevent ending a part in the middle of a comment</label>
             </div>
         </div>
     </div>
