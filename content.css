@@ -1,0 +1,60 @@
+#photos_snowlift {
+    display: none;
+}
+
+.fb_post_screenshot_infobox {
+    position: fixed;
+    top: 50px; 
+    left: calc(50% - 150px);
+    border-radius: 3px;
+    width: 350px;
+    padding: 8px 5px 5px;
+    font-size: 14px;
+    text-align: center;
+    background-color: #d4e4f1;
+    color: #1e394f;
+    z-index: 1000;
+    transition: .5s opacity ease-in;
+}
+
+.fb_post_screenshot_popup_overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 5000;
+    color: #d4e4f1;
+    background: #1e394f;
+    display: table;
+    width:100%;
+    height:100%;
+    font-size: 18px;
+}
+
+.fb_post_screenshot_popup_overlay_content {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.fb_post_screenshot_popup_overlay_content_status {
+    font-size: 12px;
+}
+
+.fb_post_screenshot__blur {
+    filter: blur(3px);
+}
+
+.fb_post_screenshot__feed {
+    position: relative;
+    top: 0px;
+    left: 1000px;
+    background: white;
+    z-index: 1000000;
+}
+
+.fb_post_screenshot__feed_preventCutting {
+    position: absolute !important;
+    left: 0px !important;
+}

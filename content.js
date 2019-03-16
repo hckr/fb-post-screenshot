@@ -13,8 +13,7 @@ observer.observe(document.documentElement, {
 let infobox = document.createElement('div'),
     infobox_timeout = null;
 
-infobox.className = 'fb_post_screenshot_infobox'
-infobox.style = 'position: fixed; top: 50px; left: calc(50% - 150px); border-radius: 3px; width: 350px; padding: 8px 5px 5px; font-size: 14px; text-align: center; background-color: #d4e4f1; color: #1e394f; z-index: 1000; transition: .5s opacity ease-in;';
+infobox.className = 'fb_post_screenshot_infobox';
 infobox.style.display = 'none';
 infobox.style.opacity = 0;
 document.body.appendChild(infobox);
@@ -175,21 +174,21 @@ window.addEventListener('message', e => {
                     }
                     received_screenshot_command = true;
                     function initScreenshot() {
-                        window.title = 'Screenshooting...';
-                        let notice_outer_div = document.createElement('div');
-                        notice_outer_div.style = 'position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 5000; color: #d4e4f1; background: #1e394f; display: table; width:100%; height:100%; font-size: 18px';
-                        let notice_inner_span = document.createElement('span');
-                        notice_inner_span.style = 'display: table-cell; vertical-align: middle; text-align: center';
-                        notice_inner_span.appendChild(document.createTextNode('Please wait...'));
-                        notice_inner_span.appendChild(document.createElement('br'));
-                        notice_inner_span.appendChild(document.createTextNode('Do not close any windows!'));
-                        notice_inner_span.appendChild(document.createElement('br'));
-                        let status_span = document.createElement('span');
-                        status_span.style = 'font-size: 12px';
-                        status_span.innerHTML = 'Status: clicked <span id="__fb_post_screenshot_status_clicks_made">0</span> times, at least <span id="__fb_post_screenshot_status_clicks_more">0</span> more clicks...';
-                        notice_inner_span.appendChild(status_span);
-                        notice_outer_div.appendChild(notice_inner_span);
-                        document.body.appendChild(notice_outer_div);
+                        window.title = 'Screenshotting...';
+                        let popup_overlay = document.createElement('div');
+                        popup_overlay.className = 'fb_post_screenshot_popup_overlay';
+                        let popup_overlay_content = document.createElement('span');
+                        popup_overlay_content.className = 'fb_post_screenshot_popup_overlay_content';
+                        popup_overlay_content.appendChild(document.createTextNode('Please wait...'));
+                        popup_overlay_content.appendChild(document.createElement('br'));
+                        popup_overlay_content.appendChild(document.createTextNode('Do not close any windows!'));
+                        popup_overlay_content.appendChild(document.createElement('br'));
+                        let popup_overlay_content_status = document.createElement('span');
+                        popup_overlay_content_status.className = 'fb_post_screenshot_popup_overlay_content_status';
+                        popup_overlay_content_status.innerHTML = 'Status: clicked <span id="__fb_post_screenshot_status_clicks_made">0</span> times, at least <span id="__fb_post_screenshot_status_clicks_more">0</span> more clicks...';
+                        popup_overlay_content.appendChild(popup_overlay_content_status);
+                        popup_overlay.appendChild(popup_overlay_content);
+                        document.body.appendChild(popup_overlay);
                         e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, confirmation_secret: data.arguments[1] }), origin);
                         screenshotPostInCurrentWindow(data.arguments[0], image_data_urls => {
                             e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_urls: image_data_urls }), origin);
@@ -213,15 +212,10 @@ window.addEventListener('message', e => {
 });
 
 function screenshotPostInCurrentWindow(anonymize, callback) {
-    // hide theater view:
-    let style = document.createElement('style');
-    document.head.appendChild(style);
-    style.sheet.insertRule('#photos_snowlift { display: none; }', 0);
-    // ------------------
     
     let postWrapper = document.querySelector('.userContentWrapper'),
         feed = postWrapper.closest('[role=feed]');
-    feed.style += ';position: relative; top: 0px; left: 1000px; background: white; z-index: 1000000;';
+    feed.classList.add('fb_post_screenshot__feed');
 
     let unfoldQueue = [];
 
@@ -282,7 +276,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         }
 
         for (let avatar of [postWrapper.querySelector('img'), ...postWrapper.querySelectorAll('._3mf5, .UFIActorImage, a[data-hovercard] img')]) {
-            avatar.style = (avatar.style || '') + ';filter: blur(3px);';
+            avatar.classList.add('fb_post_screenshot__blur');
         }
 
         let reactionsTextEl = document.querySelector('._3dlh span');
@@ -321,8 +315,7 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
                 height = Math.ceil(rect.height);
             if (options.preventCutting) {
                 postWrapper.style.width = `${width}px`;
-                feed.style.position = 'absolute';
-                feed.style.left = '0px';
+                feed.classList.add('fb_post_screenshot__feed_preventCutting');
                 document.body.appendChild(feed);
                 rect = postWrapper.getBoundingClientRect();
                 x = Math.ceil(rect.x);
