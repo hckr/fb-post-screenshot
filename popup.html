@@ -8,42 +8,60 @@
             text-decoration: none;
             cursor: default;
         }
+        .panel-list-item {
+            color: #1e394f;
+        }
+        .panel-list-item.footer {
+            color: #85c0f1;
+        }
+        .icon {
+            text-indent: 20px;
+            background: no-repeat left 10px top 50% / auto 18px;
+        }
+        .footer {
+            text-indent: initial;
+        }
+        .options {
+            background-image: url('icons/options.png');
+        }
+        .issues {
+            background-image: url('icons/issues.png');
+        }
+        .rate {
+            background-image: url('icons/rate.png');
+        }
+        .code {
+            background-image: url('icons/code.png');
+        }
+        .donate {
+            background-image: url('icons/donate.png');
+        }
     </style>
 </head>
 <body>
     <div class="panel-section panel-section-list">
-        <div class="panel-list-item" id="show-options">
-            <div class="text">Options</div>
+        <div class="icon options" id="show-options">
+            <div class="panel-list-item">Options</div>
         </div>
 
-        <a href="https://github.com/hckr/fb-post-screenshot/issues">
-            <div class="panel-list-item">
-                <div class="text">Issues / suggestions</div>
-            </div>
+        <a class="icon issues" href="https://github.com/hckr/fb-post-screenshot/issues">
+            <div class="panel-list-item">Issues / suggestions</div>
         </a>
 
-        <a href="https://addons.mozilla.org/en-US/firefox/addon/facebook-post-screenshot/">
-            <div class="panel-list-item">
-                <div class="text">Rate the add-on</div>
-            </div>
+        <a class="icon rate" href="https://addons.mozilla.org/en-US/firefox/addon/facebook-post-screenshot/">
+            <div class="panel-list-item">Rate the add-on</div>
         </a>
 
-        <a href="https://github.com/hckr/fb-post-screenshot">
-            <div class="panel-list-item">
-                <div class="text">Source code</div>
-            </div>
+        <a class="icon code" href="https://github.com/hckr/fb-post-screenshot">
+            <div class="panel-list-item">Source code</div>
         </a>
 
-        <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=DGFDYG56ZQ6RN&item_name=Facebook+Post+Screenshot+add-on&currency_code=PLN&source=url">
-            <div class="panel-list-item">
-                <div class="text">Donate</div>
-            </div>
+        <a class="icon donate" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=DGFDYG56ZQ6RN&item_name=Facebook+Post+Screenshot+add-on&currency_code=PLN&source=url">
+            <div class="panel-list-item">Donate</div>
         </a>
       
         <div class="panel-section-separator"></div>
-        <div class="panel-list-item disabled">
-            <div class="text">Facebook Post Screenshot <span id="version"></span></div>
-        </div>
+        <div class="panel-list-item disabled footer">Facebook Post Screenshot</div>
     </div>
     <script src="popup.js"></script>
 </body>

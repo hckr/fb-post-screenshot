@@ -1,4 +1,4 @@
-document.getElementById('version').innerText = `v. ${browser.runtime.getManifest().version}`;
+document.querySelector('.footer').innerText += ` v. ${browser.runtime.getManifest().version}`;
 
 document.getElementById('show-options').addEventListener('click', _ => {
     browser.runtime.openOptionsPage();
