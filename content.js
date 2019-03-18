@@ -56,7 +56,7 @@ function observerCallback(mutations) {
                 if (menu_item) {
                     function createMenuElement(button_text, button_text2) {
                         let button = document.createElement('li');
-                        button.className = '_54ni _41t6 __MenuItem save_screenshot' + (menu_item.querySelector('._xaa._4i13') ? ' _xaa _4i13' : '');
+                        button.className = '_54ni __MenuItem save_screenshot' + (menu_item.querySelector('._xaa._4i13') ? ' _xaa _4i13' : '') + (menu_item.querySelector('._41t6') ? ' _41t6' : '');
                         button.role = 'presentation';
                         let button_a = document.createElement('a');
                         button_a.className = '_54nc';
