@@ -214,7 +214,7 @@ window.addEventListener('message', e => {
 function screenshotPostInCurrentWindow(anonymize, callback) {
     
     let postWrapper = document.querySelector('.userContentWrapper'),
-        feed = postWrapper.closest('[role=feed]');
+        feed = postWrapper.closest('[role=feed], #event_wall');
     feed.classList.add('fb_post_screenshot__feed');
 
     let unfoldQueue = [];
