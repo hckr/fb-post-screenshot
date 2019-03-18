@@ -1,0 +1,42 @@
+a {
+    color: inherit;
+    text-decoration: none;
+    cursor: default;
+}
+
+.panel-list-item {
+    color: #1e394f;
+}
+
+.panel-list-item.footer {
+    color: #85c0f1;
+}
+
+.icon {
+    text-indent: 20px;
+    background: no-repeat left 10px top 50% / auto 18px;
+}
+
+.footer {
+    text-indent: initial;
+}
+
+.options {
+    background-image: url('icons/options.png');
+}
+
+.issues {
+    background-image: url('icons/issues.png');
+}
+
+.rate {
+    background-image: url('icons/rate.png');
+}
+
+.code {
+    background-image: url('icons/code.png');
+}
+
+.donate {
+    background-image: url('icons/donate.png');
+}
