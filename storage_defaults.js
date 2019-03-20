@@ -1,4 +1,6 @@
 const defaults = {
+    destinationRelativePath: '',
+    saveAs: 'browser',
     format: 'image/png',
     quality: 0.95,
     maxHeight: 8192,

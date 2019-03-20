@@ -1,12 +1,23 @@
 document.getElementById('new-issue').onclick = _ => window.open('https://github.com/hckr/fb-post-screenshot/issues/new');
 
-let formatSelect = document.getElementById('format'),
+let destinationRelativePathInput = document.getElementById('destination-relative-path'),
+    saveAsSelect = document.getElementById('save-as'),
+    formatSelect = document.getElementById('format'),
     qualityLabel = document.getElementById('quality-label'),
     qualityInput = document.getElementById('quality'),
     maxHeightInput = document.getElementById('max-height'),
     preventCuttingCheckbox = document.getElementById('prevent-cutting');
 
-for (let [el, ev] of [[formatSelect, 'change'], [qualityInput, 'input'], [maxHeightInput, 'input'], [preventCuttingCheckbox, 'change']]) {
+let elementEvents = [
+    [destinationRelativePathInput, 'input'],
+    [saveAsSelect, 'change'],
+    [formatSelect, 'change'],
+    [qualityInput, 'input'],
+    [maxHeightInput, 'input'],
+    [preventCuttingCheckbox, 'change']
+];
+
+for (let [el, ev] of elementEvents) {
     el.addEventListener(ev, _ => {
         saveValues();
         updateQualityVisibility();
@@ -17,9 +28,13 @@ restoreValues();
 
 function saveValues() {
     browser.storage.local.set({
+        saveAs: saveAsSelect.value,
         format: formatSelect.value,
         preventCutting: preventCuttingCheckbox.checked
     });
+    if (destinationRelativePathInput.checkValidity()) {
+        browser.storage.local.set({ destinationRelativePath: destinationRelativePathInput.value });
+    }
     if(qualityInput.checkValidity()) {
         browser.storage.local.set({ quality: parseFloat(qualityInput.value) });
     }
@@ -30,6 +45,8 @@ function saveValues() {
 
 function restoreValues() {
     browser.storage.local.get().then(values => {
+        destinationRelativePathInput.value = values.destinationRelativePath;
+        saveAsSelect.value = values.saveAs;
         formatSelect.value = values.format;
         qualityInput.value = values.quality;
         maxHeightInput.value = values.maxHeight;

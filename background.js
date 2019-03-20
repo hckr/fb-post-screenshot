@@ -1,11 +1,40 @@
 let objectURLs = new Map(); // id => objectURL
 
+let destinationRelativePath = '',
+    saveAs = undefined;
+function updateLocalOptions(data) {
+    if ('destinationRelativePath' in data) {
+        destinationRelativePath = data.destinationRelativePath;
+    }
+    switch (data.saveAs) {
+        case 'browser':
+            saveAs = undefined;
+            break;
+        case 'yes':
+            saveAs = true;
+            break;
+        case 'no':
+            saveAs = false;
+            break;
+    }
+}
+// browser.storage.local.get().then(updateLocalOptions); -- updated in storage_defaults.js - triggers change
+browser.storage.onChanged.addListener(changes => {
+    let newData = {};
+    [].forEach.call(Object.entries(changes), ([k, v]) => {
+        newData[k] = v.newValue;
+    });
+    updateLocalOptions(newData);
+});
+
 browser.runtime.onMessage.addListener(data => {
     let blob = dataURItoBlob(data.data_uri),
-        objectURL = URL.createObjectURL(blob);
+        objectURL = URL.createObjectURL(blob),
+        pathWithFileName = appendExtension([destinationRelativePath, data.filename].filter(x => x.length).join('/'), blob.type);
     browser.downloads.download({
         url: objectURL,
-        filename: appendExtension(data.filename, blob.type)
+        filename: pathWithFileName,
+        saveAs: saveAs
     }).then(id => {
         objectURLs.set(id, objectURL);
     }).catch(_ => {
