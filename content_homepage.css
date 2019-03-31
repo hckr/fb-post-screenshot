@@ -1,0 +1,34 @@
+.addon-icon-pointer {
+    position: absolute;
+    top: 0px;
+    right: 50px;
+    font-size: 64px;
+    color: #d4e4f1;
+    animation: 1s infinite alternate pointing-motion;
+}
+
+.highlighted {
+    border-color: #f1ad85;
+}
+
+@keyframes pointing-motion {
+    from {
+        top: 0px;
+    }
+    to {
+        top: 20px;
+    }
+}
+
+@media (max-width: 550px) {
+    .addon-icon-pointer {
+        right: 30px;
+    }
+}
+
+@media (max-width: 800px) {
+    .addon-icon-pointer {
+        font-size: 32px;
+        right: 64px;
+    }
+}

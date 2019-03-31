@@ -12,10 +12,15 @@
             "matches": [ "*://*.facebook.com/*" ],
             "js": [ "content.js" ],
             "css": [ "content.css" ]
+        },
+        {
+            "matches": [ "*://hckr.pl/fb-post-screenshot/*" ],
+            "js": [ "content_homepage.js" ],
+            "css": [ "content_homepage.css" ]         
         }
     ],
     "background": {
-        "scripts": [ "storage_defaults.js", "background.js" ]
+        "scripts": [ "storage_defaults.js", "register_oninstall.js", "background.js" ]
     },
     "options_ui": {
         "page": "options.html"
