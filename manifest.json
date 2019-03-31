@@ -10,20 +10,20 @@
     "content_scripts": [
         {
             "matches": [ "*://*.facebook.com/*" ],
-            "js": [ "content.js" ],
-            "css": [ "content.css" ]
+            "js": [ "content/content.js" ],
+            "css": [ "content/content.css" ]
         },
         {
             "matches": [ "*://hckr.pl/fb-post-screenshot/*" ],
-            "js": [ "content_homepage.js" ],
-            "css": [ "content_homepage.css" ]         
+            "js": [ "content/content_homepage.js" ],
+            "css": [ "content/content_homepage.css" ]         
         }
     ],
     "background": {
-        "scripts": [ "storage_defaults.js", "register_oninstall.js", "background.js" ]
+        "scripts": [ "background/storage_defaults.js", "background/register_oninstall.js", "background/background.js" ]
     },
     "options_ui": {
-        "page": "options.html"
+        "page": "options/options.html"
     },
     "browser_action": {
         "browser_style": true,
@@ -36,7 +36,7 @@
             "size": 72
         }],
         "default_title": "Facebook Post Screenshot",
-        "default_popup": "popup.html"
+        "default_popup": "popup/popup.html"
     },
     "permissions": [
         "<all_urls>",
