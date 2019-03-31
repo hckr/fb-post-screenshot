@@ -30,6 +30,7 @@ a {
     border-radius: 10px;
     font-size: 20px;
     box-shadow: 0 0 5px 2px #1e394f;
+    margin: 30px 0;
 }
 
 .download-link:hover {
