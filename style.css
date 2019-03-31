@@ -2,6 +2,7 @@ html {
     font-family: 'Fira Sans', sans-serif;
     text-align: center;
     background: #e9ecef;
+    scroll-behavior: smooth;
 }
 
 html, body {
@@ -37,13 +38,24 @@ a {
     box-shadow: 0 0 10px 2px #1e394f;
 }
 
-h1 {
+.changelog-link {
+    display: block;
+}
+
+h1, h2 {
     margin: 0;
     padding: 0;
     font-weight: 400;
+}
+
+h1 {
     font-size: 42px;
     display: inline-block;
     background: top left no-repeat url('icon-light.png');
+}
+
+h2 {
+    font-size: 22px;
 }
 
 .title {
@@ -90,4 +102,16 @@ figcaption {
 .github-buttons {
     margin-top: 10px;
     text-align: center;
+}
+
+#changelog dt {
+    margin: 20px 0 5px;
+}
+
+#changelog dd:before {
+    content: '– ';
+}
+
+#changelog dd {
+    margin-left: 15px;
 }
