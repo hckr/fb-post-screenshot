@@ -21,6 +21,11 @@ a {
     color: #1e394f;
 }
 
+a:focus {
+    outline: 3px dashed #f50f82;
+    outline-offset: 10px;
+}
+
 .download-link {
     display: inline-block;
     color: #1e394f;
@@ -39,7 +44,8 @@ a {
 }
 
 .changelog-link {
-    display: block;
+    display: table;
+    margin: auto;
 }
 
 h1, h2 {
