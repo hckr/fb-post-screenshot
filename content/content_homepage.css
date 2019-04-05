@@ -11,6 +11,10 @@
     border-color: #f1ad85;
 }
 
+.highlighted-text {
+    font-weight: bold;
+}
+
 @keyframes pointing-motion {
     from {
         top: 0px;

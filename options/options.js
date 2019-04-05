@@ -6,7 +6,8 @@ let destinationRelativePathInput = document.getElementById('destination-relative
     qualityLabel = document.getElementById('quality-label'),
     qualityInput = document.getElementById('quality'),
     maxHeightInput = document.getElementById('max-height'),
-    preventCuttingCheckbox = document.getElementById('prevent-cutting');
+    preventCuttingCheckbox = document.getElementById('prevent-cutting'),
+    informAboutUpdateCheckbox = document.getElementById('inform-about-update');
 
 let elementEvents = [
     [destinationRelativePathInput, 'input'],
@@ -14,7 +15,8 @@ let elementEvents = [
     [formatSelect, 'change'],
     [qualityInput, 'input'],
     [maxHeightInput, 'input'],
-    [preventCuttingCheckbox, 'change']
+    [preventCuttingCheckbox, 'change'],
+    [informAboutUpdateCheckbox, 'change']
 ];
 
 for (let [el, ev] of elementEvents) {
@@ -30,7 +32,8 @@ function saveValues() {
     browser.storage.local.set({
         saveAs: saveAsSelect.value,
         format: formatSelect.value,
-        preventCutting: preventCuttingCheckbox.checked
+        preventCutting: preventCuttingCheckbox.checked,
+        informAboutUpdate: informAboutUpdateCheckbox.checked
     });
     if (destinationRelativePathInput.checkValidity()) {
         browser.storage.local.set({ destinationRelativePath: destinationRelativePathInput.value });
@@ -51,6 +54,7 @@ function restoreValues() {
         qualityInput.value = values.quality;
         maxHeightInput.value = values.maxHeight;
         preventCuttingCheckbox.checked = values.preventCutting;
+        informAboutUpdateCheckbox.checked = values.informAboutUpdate;
         setTimeout(updateQualityVisibility, 50);
     });
 }
