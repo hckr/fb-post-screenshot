@@ -1,3 +1,7 @@
+body {
+    min-width: 260px;
+}
+
 a {
     color: inherit;
     text-decoration: none;
@@ -10,6 +14,7 @@ a {
 
 .panel-list-item.footer {
     color: #85c0f1;
+    margin: auto;
 }
 
 .icon {
