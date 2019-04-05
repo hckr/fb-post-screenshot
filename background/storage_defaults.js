@@ -5,7 +5,8 @@ const defaults = {
     quality: 0.95,
     maxHeight: 8192,
     preventCutting: true,
-    informAboutUpdate: true
+    informAboutUpdate: true,
+    screenshotType: 'with-all-comments'
 };
 
 browser.storage.local.get().then(values =>

@@ -190,9 +190,15 @@ window.addEventListener('message', e => {
                         popup_overlay.appendChild(popup_overlay_content);
                         document.body.appendChild(popup_overlay);
                         e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, confirmation_secret: data.arguments[1] }), origin);
-                        screenshotPostInCurrentWindow(data.arguments[0], image_data_urls => {
-                            e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_urls: image_data_urls }), origin);
-                            window.close();
+                        browser.storage.local.get().then(values => {
+                            screenshotPostInCurrentWindow({
+                                anonymize: data.arguments[0],
+                                options: values,
+                                callback: image_data_urls => {
+                                    e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_urls: image_data_urls }), origin);
+                                    window.close();
+                                }
+                            });
                         });
                     }
                     window.addEventListener('load', initScreenshot);
@@ -211,13 +217,32 @@ window.addEventListener('message', e => {
     }
 });
 
-function screenshotPostInCurrentWindow(anonymize, callback) {
+function screenshotPostInCurrentWindow({anonymize, options, callback: afterScreenshotCallback}) {
     
     let postWrapper = document.querySelector('.userContentWrapper'),
-        feed = postWrapper.closest('[role=feed], #event_wall');
+        feed = postWrapper.closest('[role=feed], #event_wall'),
+        unfoldQueue = [];
     feed.classList.add('fb_post_screenshot__feed');
+    
+    if (options.screenshotType == 'with-all-comments') {
+        unfoldComments(screenshotPost);
+    } else {
+        try {
+            let commentSection = document.querySelector('.commentable_item ul').parentNode;
+            commentSection.parentNode.removeChild(commentSection);
+        } finally { }
+        
+        screenshotPost();
+    }
 
-    let unfoldQueue = [];
+    return // only function definitions below
+
+    function unfoldComments(callback) {
+        if (!unfoldQueue.length) {
+            discoverUnfoldLinks();
+        }
+        unfoldComments2(callback);
+    }
 
     function discoverUnfoldLinks() {
         let pagers = postWrapper.querySelectorAll('.UFIPagerLink');
@@ -237,13 +262,6 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         }
     }
 
-    function unfoldComments(callback) {
-        if (!unfoldQueue.length) {
-            discoverUnfoldLinks();
-        }
-        unfoldComments2(callback);
-    }
-
     function unfoldComments2(callback) {
         let clicks_made = document.querySelector('#__fb_post_screenshot_status_clicks_made'),
             clicks_more = document.querySelector('#__fb_post_screenshot_status_clicks_more');
@@ -256,6 +274,59 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
         } else {
             setTimeout(callback, 150);
         }
+    }
+    
+    function screenshotPost() {
+        if (anonymize) {
+            anonymizePost();
+        }
+        
+        window.scrollTo(0, 0);
+        let rect = postWrapper.getBoundingClientRect(),
+            x = Math.ceil(rect.x),
+            y = Math.ceil(rect.y),
+            width = Math.ceil(rect.width),
+            height = Math.ceil(rect.height);
+        if (options.preventCutting) {
+            postWrapper.style.width = `${width}px`;
+            feed.classList.add('fb_post_screenshot__feed_preventCutting');
+            document.body.appendChild(feed);
+            rect = postWrapper.getBoundingClientRect();
+            x = Math.ceil(rect.x);
+            y = Math.ceil(rect.y);
+        }
+        let canvas = document.createElement('canvas'),
+            ctx = canvas.getContext('2d');
+        let maxPartSize = options.maxHeight,
+            leftHeight = height,
+            image_data_urls = [];
+        while (leftHeight > 0) {
+            let partHeight = leftHeight;
+            if (leftHeight > maxPartSize) {
+                partHeight = maxPartSize;
+                
+                if (options.preventCutting) {
+                    window.scrollTo(0, y + partHeight - 10);
+                    let cutThroughComment = document.elementFromPoint(100, 10).closest('li');
+                    if (cutThroughComment) {
+                        window.scrollTo(0, 0);
+                        newPartHeight = cutThroughComment.getBoundingClientRect().y - y;
+                        if (newPartHeight > 0) {
+                            partHeight = newPartHeight;
+                        }
+                    }
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = partHeight;
+            ctx.drawWindow(window, x, y, width, partHeight, 'rgb(255,255,255)');
+            image_data_urls.push(canvas.toDataURL(options.format, options.quality));
+
+            y += partHeight;
+            leftHeight -= partHeight;
+        }
+        afterScreenshotCallback(image_data_urls);
     }
 
     function anonymizePost() {
@@ -300,61 +371,6 @@ function screenshotPostInCurrentWindow(anonymize, callback) {
             return (a.href.match(oldFormat) || a.href.match(newFormat) || '  ')[1];
         }
     }
-
-    unfoldComments(() => {
-        if (anonymize) {
-            anonymizePost();
-        }
-        
-        browser.storage.local.get().then(options => {
-            window.scrollTo(0, 0);
-            let rect = postWrapper.getBoundingClientRect(),
-                x = Math.ceil(rect.x),
-                y = Math.ceil(rect.y),
-                width = Math.ceil(rect.width),
-                height = Math.ceil(rect.height);
-            if (options.preventCutting) {
-                postWrapper.style.width = `${width}px`;
-                feed.classList.add('fb_post_screenshot__feed_preventCutting');
-                document.body.appendChild(feed);
-                rect = postWrapper.getBoundingClientRect();
-                x = Math.ceil(rect.x);
-                y = Math.ceil(rect.y);
-            }
-            let canvas = document.createElement('canvas'),
-                ctx = canvas.getContext('2d');
-            let maxPartSize = options.maxHeight,
-                leftHeight = height,
-                image_data_urls = [];
-            while (leftHeight > 0) {
-                let partHeight = leftHeight;
-                if (leftHeight > maxPartSize) {
-                    partHeight = maxPartSize;
-                    
-                    if (options.preventCutting) {
-                        window.scrollTo(0, y + partHeight - 10);
-                        let cutThroughComment = document.elementFromPoint(100, 10).closest('li');
-                        if (cutThroughComment) {
-                            window.scrollTo(0, 0);
-                            newPartHeight = cutThroughComment.getBoundingClientRect().y - y;
-                            if (newPartHeight > 0) {
-                                partHeight = newPartHeight;
-                            }
-                        }
-                    }
-                }
-
-                canvas.width = width;
-                canvas.height = partHeight;
-                ctx.drawWindow(window, x, y, width, partHeight, 'rgb(255,255,255)');
-                image_data_urls.push(canvas.toDataURL(options.format, options.quality));
-
-                y += partHeight;
-                leftHeight -= partHeight;
-            }
-            callback(image_data_urls);
-        });
-    });
 }
 
 })();

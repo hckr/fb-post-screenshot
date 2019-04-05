@@ -7,7 +7,8 @@ let destinationRelativePathInput = document.getElementById('destination-relative
     qualityInput = document.getElementById('quality'),
     maxHeightInput = document.getElementById('max-height'),
     preventCuttingCheckbox = document.getElementById('prevent-cutting'),
-    informAboutUpdateCheckbox = document.getElementById('inform-about-update');
+    informAboutUpdateCheckbox = document.getElementById('inform-about-update'),
+    screenshotTypeSelect = document.getElementById('screenshot-type');
 
 let elementEvents = [
     [destinationRelativePathInput, 'input'],
@@ -16,7 +17,8 @@ let elementEvents = [
     [qualityInput, 'input'],
     [maxHeightInput, 'input'],
     [preventCuttingCheckbox, 'change'],
-    [informAboutUpdateCheckbox, 'change']
+    [informAboutUpdateCheckbox, 'change'],
+    [screenshotTypeSelect, 'change']
 ];
 
 for (let [el, ev] of elementEvents) {
@@ -33,7 +35,8 @@ function saveValues() {
         saveAs: saveAsSelect.value,
         format: formatSelect.value,
         preventCutting: preventCuttingCheckbox.checked,
-        informAboutUpdate: informAboutUpdateCheckbox.checked
+        informAboutUpdate: informAboutUpdateCheckbox.checked,
+        screenshotType: screenshotTypeSelect.value
     });
     if (destinationRelativePathInput.checkValidity()) {
         browser.storage.local.set({ destinationRelativePath: destinationRelativePathInput.value });
@@ -55,6 +58,7 @@ function restoreValues() {
         maxHeightInput.value = values.maxHeight;
         preventCuttingCheckbox.checked = values.preventCutting;
         informAboutUpdateCheckbox.checked = values.informAboutUpdate;
+        screenshotTypeSelect.value = values.screenshotType;
         setTimeout(updateQualityVisibility, 50);
     });
 }
