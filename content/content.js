@@ -1,5 +1,3 @@
-(function(){
-
 for (let button of document.querySelectorAll('.save_screenshot, .fb_post_screenshot_infobox')) {
     button.parentNode.removeChild(button);
 }
@@ -372,5 +370,3 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
         }
     }
 }
-
-})();

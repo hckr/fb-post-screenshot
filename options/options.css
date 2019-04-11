@@ -19,6 +19,16 @@ input, select {
     min-height: 50px;
     border-top: 1px solid rgba(12, 12, 13, 0.3);
     text-shadow: 0 1px 1px #fefffe;
+    overflow: hidden;
+    height: auto;
+    opacity: 1;
+    transition: .5s ease-in all;
+}
+
+.detail-row.hidden {
+    min-height: 0;
+    max-height: 0;
+    opacity: 0;
 }
 
 .detail-row img[alt="help"] {
@@ -69,6 +79,14 @@ input, select {
 }
 
 #max-height {
+    width: 100px;
+}
+
+#watch-group-frequency-label {
+    margin-left: 30px;
+}
+
+#watch-group-frequency {
     width: 100px;
 }
 

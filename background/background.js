@@ -28,18 +28,12 @@ browser.storage.onChanged.addListener(changes => {
 });
 
 browser.runtime.onMessage.addListener(data => {
-    let blob = dataURItoBlob(data.data_uri),
-        objectURL = URL.createObjectURL(blob),
-        pathWithFileName = appendExtension([destinationRelativePath, data.filename].filter(x => x.length).join('/'), blob.type);
-    browser.downloads.download({
-        url: objectURL,
-        filename: pathWithFileName,
-        saveAs: saveAs
-    }).then(id => {
-        objectURLs.set(id, objectURL);
-    }).catch(_ => {
-        URL.revokeObjectURL(objectURL);
-    });
+    switch (data.command) {
+        case 'download':
+            handleDownload(data);
+            break;
+    }
+    
 });
 
 browser.downloads.onChanged.addListener(delta => {
@@ -48,6 +42,22 @@ browser.downloads.onChanged.addListener(delta => {
         objectURLs.delete(delta.id);
     }
 });
+
+function handleDownload(data) {
+    let blob = dataURItoBlob(data.data_uri),
+        objectURL = URL.createObjectURL(blob),
+        pathWithFileName = appendExtension([destinationRelativePath, data.filename].filter(x => x.length).join('/'), blob.type);
+    
+    browser.downloads.download({
+        url: objectURL,
+        filename: pathWithFileName,
+        saveAs: data.save_as_dialog !== undefined ? data.save_as_dialog : saveAs
+    }).then(id => {
+        objectURLs.set(id, objectURL);
+    }).catch(_ => {
+        URL.revokeObjectURL(objectURL);
+    });
+}
 
 function appendExtension(filename, mimetype) {
     let ext = '';

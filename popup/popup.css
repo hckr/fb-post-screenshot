@@ -12,6 +12,11 @@ a {
     color: #1e394f;
 }
 
+.panel-list-item.disabled {
+    color: #bbb;
+    margin: auto;
+}
+
 .panel-list-item.footer {
     color: #85c0f1;
     margin: auto;

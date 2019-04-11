@@ -8,7 +8,9 @@ let destinationRelativePathInput = document.getElementById('destination-relative
     maxHeightInput = document.getElementById('max-height'),
     preventCuttingCheckbox = document.getElementById('prevent-cutting'),
     informAboutUpdateCheckbox = document.getElementById('inform-about-update'),
-    screenshotTypeSelect = document.getElementById('screenshot-type');
+    screenshotTypeSelect = document.getElementById('screenshot-type'),
+    watchGroupCheckbox = document.getElementById('watch-group'),
+    watchGroupFrequencyInput = document.getElementById('watch-group-frequency');
 
 let elementEvents = [
     [destinationRelativePathInput, 'input'],
@@ -18,14 +20,27 @@ let elementEvents = [
     [maxHeightInput, 'input'],
     [preventCuttingCheckbox, 'change'],
     [informAboutUpdateCheckbox, 'change'],
-    [screenshotTypeSelect, 'change']
+    [screenshotTypeSelect, 'change'],
+    [watchGroupCheckbox, 'change'],
+    [watchGroupFrequencyInput, 'input']
 ];
 
 for (let [el, ev] of elementEvents) {
     el.addEventListener(ev, _ => {
         saveValues();
-        updateQualityVisibility();
     });
+    switch (el) {
+        case formatSelect:
+            el.addEventListener(ev, _ => {
+                updateQualityVisibility();
+            });
+            break;
+        case watchGroupCheckbox:
+            el.addEventListener(ev, _ => {
+                updateWatchGroupFrequencyVisibility();
+            });
+            break;
+    }
 }
 
 restoreValues();
@@ -36,16 +51,20 @@ function saveValues() {
         format: formatSelect.value,
         preventCutting: preventCuttingCheckbox.checked,
         informAboutUpdate: informAboutUpdateCheckbox.checked,
-        screenshotType: screenshotTypeSelect.value
+        screenshotType: screenshotTypeSelect.value,
+        watchGroup: watchGroupCheckbox.checked
     });
     if (destinationRelativePathInput.checkValidity()) {
         browser.storage.local.set({ destinationRelativePath: destinationRelativePathInput.value });
     }
-    if(qualityInput.checkValidity()) {
+    if (qualityInput.checkValidity()) {
         browser.storage.local.set({ quality: parseFloat(qualityInput.value) });
     }
-    if(maxHeightInput.checkValidity()) {
+    if (maxHeightInput.checkValidity()) {
         browser.storage.local.set({ maxHeight: parseInt(maxHeightInput.value) });
+    }
+    if (watchGroupFrequencyInput.checkValidity()) {
+        browser.storage.local.set({ watchGroupFrequency: parseInt(watchGroupFrequencyInput.value) });
     }
 }
 
@@ -59,7 +78,10 @@ function restoreValues() {
         preventCuttingCheckbox.checked = values.preventCutting;
         informAboutUpdateCheckbox.checked = values.informAboutUpdate;
         screenshotTypeSelect.value = values.screenshotType;
+        watchGroupCheckbox.checked = values.watchGroup;
+        watchGroupFrequencyInput.value = values.watchGroupFrequency;
         setTimeout(updateQualityVisibility, 50);
+        setTimeout(updateWatchGroupFrequencyVisibility, 50);
     });
 }
 
@@ -68,5 +90,14 @@ function updateQualityVisibility() {
         qualityLabel.classList.add('visible');
     } else {
         qualityLabel.classList.remove('visible');
+    }
+}
+
+function updateWatchGroupFrequencyVisibility() {
+    let row = document.getElementById('watch-group-frequency-row');
+    if (watchGroupCheckbox.checked) {
+        row.classList.remove('hidden');
+    } else {
+        row.classList.add('hidden');
     }
 }
