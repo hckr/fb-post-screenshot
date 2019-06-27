@@ -1,4 +1,15 @@
-document.querySelector('.footer').innerText += ` v. ${browser.runtime.getManifest().version}`;
+let menuWrapper = document.getElementById('menu-wrapper');
+
+setTimeout(() => {
+    let footerSeparator = document.createElement('div');
+    footerSeparator.className = 'panel-section-separator';
+    menuWrapper.appendChild(footerSeparator);
+
+    let footer = document.createElement('div');
+    footer.className = 'panel-list-item disabled footer';
+    footer.innerText = `Facebook Post Screenshot v. ${browser.runtime.getManifest().version}`;
+    menuWrapper.appendChild(footer);
+});
 
 document.getElementById('show-options').addEventListener('click', _ => {
     browser.runtime.openOptionsPage();
@@ -6,8 +17,6 @@ document.getElementById('show-options').addEventListener('click', _ => {
 });
 
 document.body.addEventListener('click', e => e.target.closest('a') && setTimeout(window.close, 50));
-
-let menuWrapper = document.getElementById('menu-wrapper');
 
 Promise.all([
     browser.storage.local.get(),
