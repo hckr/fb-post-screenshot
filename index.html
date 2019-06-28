@@ -18,128 +18,132 @@
             </h1>
         </a>
     </header>
-    
+
     <a class="download-link" href="https://addons.mozilla.org/en-US/firefox/addon/facebook-post-screenshot/">Get it now from Firefox Add-ons website</a>
-    
+
     <a class="changelog-link" href="#changelog">See the changelog</a>
-        
+
     <figure>
         <div>
             <img src="screenshot.png">
             <figcaption>Add-on adds a new option in each post's menu to save its screenshot (with all replies expanded). There is an option for anonymization. Large posts are split into multiple images.</figcaption>
         </div>
     </figure>
-    
+
     <div class="content-block">
         Facebook Post Screenshot is a Firefox web extension to save Facebook posts as images. Add-on adds a new option in each post's menu to save its screenshot (with all replies expanded). Screenshot can also be anonymized (profile pictures blurred, names replaced with identifiers like "OP", "Profile 1", "Profile 2" and so on). Large posts are split into multiple images each at most 8192 px tall (this can be changed in options up to 16000 px).
     </div>
-    
+
     <div class="content-block">
         The code is open source and available <a href="https://github.com/hckr/fb-post-screenshot">on GitHub</a>. If you're interested, check out also <a href="https://hckr.pl">my other projects</a>.
-        
+
         <div class="github-buttons">
             <a class="github-button" href="https://github.com/hckr/fb-post-screenshot" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star hckr/fb-post-screenshot on GitHub">Star</a>
             <a class="github-button" href="https://github.com/hckr/fb-post-screenshot/issues" data-icon="octicon-issue-opened" data-size="large" data-show-count="true" aria-label="Issue hckr/fb-post-screenshot on GitHub">Issue</a>
             <a class="github-button" href="https://github.com/hckr" data-size="large" data-show-count="true" aria-label="Follow @hckr on GitHub">Follow @hckr</a>
         </div>
     </div>
-    
+
     <div class="content-block">
         <strong>You can file bugs and suggestions in <a href="https://github.com/hckr/fb-post-screenshot/issues" title="Facebook Post Screenshot issue tracker">the issue tracker on GitHub</a>.</strong> Facebook changes the interface from time to time which causes the add-on to stop working partially or even in full. Instead of giving a one-star review, you might consider filing an issue – I'll surely try to fix it in my spare time.
     </div>
-    
+
     <div id="changelog" class="content-block">
         <h2>Changelog</h2>
-        
+
         <dl>
+            <dt>Version 1.11.0</dt>
+            <dd>Add option to respect page zoom (has to be enabled in options)</dd>
+            <dd>Fix problem with browser_action popup sometimes not repainting properly on show</dd>
+
             <dt>Version 1.10.0</dt>
             <dd>Add opening of the add-on page on update (can be disabled in options)</dd>
             <dd>Add option to capture only the post, without the comment section</dd>
             <dd>Experimental: watching a group and capturing new posts (without the comment section)</dd>
             <dd>Small fixes and refactor</dd>
-            
+
             <dt>Version 1.9.0</dt>
             <dd>Add options to select relative path for downloaded screenshots and whether to provide a file chooser</dd>
             <dd>Add help tooltips in options</dd>
             <dd>Fix problem with browser_action popup sometimes not repainting properly on show</dd>
-            
+
             <dt>Version 1.8.2</dt>
             <dd>Fix alignment issues in post menu</dd>
-            
+
             <dt>Version 1.8.1</dt>
             <dd>Fix for previously introduced bug which caused theater view not to show</dd>
-            
+
             <dt>Version 1.8.0</dt>
             <dd>Add toolbar icon with menu</dd>
             <dd>Change add-on icon</dd>
-            
+
             <dt>Version 1.7.2</dt>
             <dd>Add link for creating a new issue in add-on options</dd>
-            
+
             <dt>Version 1.7.1</dt>
             <dd>Add option for more intelligent partitioning of long screenshots</dd>
             <dd>Fix some issues with anonymized screenshots</dd>
             <dd>Fix a minor issue with add-on stopping working until Facebook refresh after an update</dd>
-            
+
             <dt>Version 1.7.0</dt>
             <dd>Add options for format selection between PNG and JPEG, and for maximum height of a single part</dd>
             <dd>Store options locally using storage API</dd>
             <dd>Fix wrong links treated as profiles in anonymization</dd>
-            
+
             <dt>Version 1.6.5</dt>
             <dd>Fix issue with OP mark sometimes not showing in the comment section (but another profile number was generated)</dd>
             <dd>Aesthesic fixes</dd>
-            
+
             <dt>Version 1.6.4</dt>
             <dd>Fixed issue with downloads and Firefox's "always ask" option</dd>
             <dd>Added info box in main window on start of download</dd>
             <dd>Added support for some new reply-expanding links</dd>
-            
+
             <dt>Version 1.6.3</dt>
             <dd>Use downloads API to download images (a new peermission is needed), which could solve an issue with downloading captured images for some users</dd>
-            
+
             <dt>Version 1.6.2</dt>
             <dd>Cosmetic change</dd>
-            
+
             <dt>Version 1.6.1</dt>
             <dd>Fixed bug with some replies not expanding</dd>
             <dd>Improved reliability</dd>
-            
+
             <dt>Version 1.6.0</dt>
             <dd>Adapted to Facebook changes</dd>
             <dd>Now works in theater view and shows up in menus for all posts (as far I as tested it right of course)</dd>
             <dd>Improved popup looks</dd>
-            
+
             <dt>Version 1.5.4</dt>
             <dd>Adapted to Facebook changes</dd>
-            
+
             <dt>Version 1.5.3</dt>
             <dd>Corrected post/photo id extraction for file name</dd>
-            
+
             <dt>Version 1.5.2</dt>
             <dd>Fix comment authors' anonymization</dd>
-            
+
             <dt>Version 1.5.1</dt>
             <dd>Fix popup hang up when taking screenshot of post without reactions</dd>
-            
+
             <dt>Version 1.5.0</dt>
             <dd>Anonymous screenshot option</dd>
             <dd>Poll options expanding</dd>
-            
+
             <dt>Version 1.4.0</dt>
             <dd>Correctly save files as JPG</dd>
             <dd>Improved post id detection (for resulting file name)</dd>
             <dd>Improved appearance on Windows</dd>
             <dd>Minor fixes</dd>
-            
+
             <dt>Version 1.3.0</dt>
             <dd>Remove "comment as" selector from screenshot</dd>
             <dd>Remove automatically showing theater view from screenshot</dd>
         </dl>
-        
+
         <a href="https://addons.mozilla.org/en-US/firefox/addon/facebook-post-screenshot/versions/">All versions on Firefox-addons page</a>
     </div>
-    
+
     <script async defer src="https://buttons.github.io/buttons.js"></script>
 </body>
 </html>
