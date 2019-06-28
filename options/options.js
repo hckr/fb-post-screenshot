@@ -7,7 +7,8 @@ let destinationRelativePathInput = document.getElementById('destination-relative
     qualityInput = document.getElementById('quality'),
     maxHeightInput = document.getElementById('max-height'),
     preventCuttingCheckbox = document.getElementById('prevent-cutting'),
-    respectPageZoomCheckbox = document.getElementById('respect-page-zoom'),
+    zoomInput = document.getElementById('zoom'),
+    sameAsPageZoomCheckbox = document.getElementById('same-as-page-zoom'),
     informAboutUpdateCheckbox = document.getElementById('inform-about-update'),
     screenshotTypeSelect = document.getElementById('screenshot-type'),
     watchGroupCheckbox = document.getElementById('watch-group'),
@@ -20,7 +21,8 @@ let elementEvents = [
     [qualityInput, 'input'],
     [maxHeightInput, 'input'],
     [preventCuttingCheckbox, 'change'],
-    [respectPageZoomCheckbox, 'change'],
+    [zoomInput, 'input'],
+    [sameAsPageZoomCheckbox, 'change'],
     [informAboutUpdateCheckbox, 'change'],
     [screenshotTypeSelect, 'change'],
     [watchGroupCheckbox, 'change'],
@@ -37,6 +39,10 @@ for (let [el, ev] of elementEvents) {
                 updateQualityVisibility();
             });
             break;
+        case sameAsPageZoomCheckbox:
+            el.addEventListener(ev, _ => {
+                updateZoomInput();
+            })
         case watchGroupCheckbox:
             el.addEventListener(ev, _ => {
                 updateWatchGroupFrequencyVisibility();
@@ -52,7 +58,7 @@ function saveValues() {
         saveAs: saveAsSelect.value,
         format: formatSelect.value,
         preventCutting: preventCuttingCheckbox.checked,
-        respectPageZoom: respectPageZoomCheckbox.checked,
+        sameAsPageZoom: sameAsPageZoomCheckbox.checked,
         informAboutUpdate: informAboutUpdateCheckbox.checked,
         screenshotType: screenshotTypeSelect.value,
         watchGroup: watchGroupCheckbox.checked
@@ -65,6 +71,9 @@ function saveValues() {
     }
     if (maxHeightInput.checkValidity()) {
         browser.storage.local.set({ maxHeight: parseInt(maxHeightInput.value) });
+    }
+    if (zoomInput.checkValidity()) {
+        browser.storage.local.set({ zoom: parseInt(zoomInput.value) });
     }
     if (watchGroupFrequencyInput.checkValidity()) {
         browser.storage.local.set({ watchGroupFrequency: parseInt(watchGroupFrequencyInput.value) });
@@ -79,12 +88,14 @@ function restoreValues() {
         qualityInput.value = values.quality;
         maxHeightInput.value = values.maxHeight;
         preventCuttingCheckbox.checked = values.preventCutting;
-        respectPageZoomCheckbox.checked = values.respectPageZoom;
+        zoomInput.value = values.zoom;
+        sameAsPageZoomCheckbox.checked = values.sameAsPageZoom;
         informAboutUpdateCheckbox.checked = values.informAboutUpdate;
         screenshotTypeSelect.value = values.screenshotType;
         watchGroupCheckbox.checked = values.watchGroup;
         watchGroupFrequencyInput.value = values.watchGroupFrequency;
         setTimeout(updateQualityVisibility, 50);
+        setTimeout(updateZoomInput, 50);
         setTimeout(updateWatchGroupFrequencyVisibility, 50);
     });
 }
@@ -104,4 +115,8 @@ function updateWatchGroupFrequencyVisibility() {
     } else {
         row.classList.add('hidden');
     }
+}
+
+function updateZoomInput() {
+    zoomInput.disabled = sameAsPageZoomCheckbox.checked
 }

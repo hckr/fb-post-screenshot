@@ -82,6 +82,10 @@ input, select {
     width: 100px;
 }
 
+#zoom {
+    width: 100px;
+}
+
 #watch-group-frequency-label {
     margin-left: 30px;
 }
@@ -114,4 +118,8 @@ fieldset button {
 
 fieldset button:hover {
     background: #cecece;
+}
+
+input[disabled] {
+    color: transparent;
 }

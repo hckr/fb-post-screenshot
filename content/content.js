@@ -296,16 +296,11 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
         let canvas = document.createElement('canvas'),
             ctx = canvas.getContext('2d');
 
-        let maxPartSize = options.maxHeight,
+        const zoomRatio = options.sameAsPageZoom ? window.devicePixelRatio : (options.zoom / 100);
+
+        let maxPartSize = (options.maxHeight / zoomRatio) | 0,
             leftHeight = height,
             image_data_urls = [];
-
-        let zoomRatio = 1;
-
-        if (options.respectPageZoom) {
-            zoomRatio = window.devicePixelRatio;
-            maxPartSize = (maxPartSize / zoomRatio) | 0;
-        }
 
         while (leftHeight > 0) {
             let partHeight = leftHeight;
