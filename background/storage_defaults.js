@@ -5,6 +5,7 @@ const defaults = {
     quality: 0.95,
     maxHeight: 8192,
     preventCutting: true,
+    respectPageZoom: false,
     informAboutUpdate: true,
     screenshotType: 'with-all-comments',
     watchGroup: false,

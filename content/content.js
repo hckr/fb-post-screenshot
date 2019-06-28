@@ -101,7 +101,7 @@ function observerCallback(mutations) {
                         post.click();
                         this.toggleText();
                         this.onclick = old_onclick;
-                        
+
                         let received_secret = "";
 
                         function responseCallback(response) {
@@ -111,9 +111,9 @@ function observerCallback(mutations) {
                             }
                             let post_id = permalink.replace(/.+permalink/, '').match(/\d{2,}/)[0],
                                 part_nr = 1;
-                            
-                            showInfoBox(`Saving screenshot of post ${post_id}...`);                            
-                            
+
+                            showInfoBox(`Saving screenshot of post ${post_id}...`);
+
                             for (let image_data_url of response.image_data_urls) {
                                 let filename;
                                 if (response.image_data_urls.length > 1) {
@@ -216,12 +216,12 @@ window.addEventListener('message', e => {
 });
 
 function screenshotPostInCurrentWindow({anonymize, options, callback: afterScreenshotCallback}) {
-    
+
     let postWrapper = document.querySelector('.userContentWrapper'),
         feed = postWrapper.closest('[role=feed], #event_wall'),
         unfoldQueue = [];
     feed.classList.add('fb_post_screenshot__feed');
-    
+
     if (options.screenshotType == 'with-all-comments') {
         unfoldComments(screenshotPost);
     } else {
@@ -229,7 +229,7 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
             let commentSection = document.querySelector('.commentable_item ul').parentNode;
             commentSection.parentNode.removeChild(commentSection);
         } finally { }
-        
+
         screenshotPost();
     }
 
@@ -273,12 +273,12 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
             setTimeout(callback, 150);
         }
     }
-    
+
     function screenshotPost() {
         if (anonymize) {
             anonymizePost();
         }
-        
+
         window.scrollTo(0, 0);
         let rect = postWrapper.getBoundingClientRect(),
             x = Math.ceil(rect.x),
@@ -295,14 +295,23 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
         }
         let canvas = document.createElement('canvas'),
             ctx = canvas.getContext('2d');
+
         let maxPartSize = options.maxHeight,
             leftHeight = height,
             image_data_urls = [];
+
+        let zoomRatio = 1;
+
+        if (options.respectPageZoom) {
+            zoomRatio = window.devicePixelRatio;
+            maxPartSize = (maxPartSize / zoomRatio) | 0;
+        }
+
         while (leftHeight > 0) {
             let partHeight = leftHeight;
             if (leftHeight > maxPartSize) {
                 partHeight = maxPartSize;
-                
+
                 if (options.preventCutting) {
                     window.scrollTo(0, y + partHeight - 10);
                     let cutThroughComment = document.elementFromPoint(100, 10).closest('li');
@@ -316,9 +325,10 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
                 }
             }
 
-            canvas.width = width;
-            canvas.height = partHeight;
-            ctx.drawWindow(window, x, y, width, partHeight, 'rgb(255,255,255)');
+            canvas.width = (width * zoomRatio) | 0;
+            canvas.height = (partHeight * zoomRatio) | 0;
+            ctx.scale(zoomRatio, zoomRatio);
+            ctx.drawWindow(window, x, y, width, partHeight, '#fff');
             image_data_urls.push(canvas.toDataURL(options.format, options.quality));
 
             y += partHeight;

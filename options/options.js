@@ -7,6 +7,7 @@ let destinationRelativePathInput = document.getElementById('destination-relative
     qualityInput = document.getElementById('quality'),
     maxHeightInput = document.getElementById('max-height'),
     preventCuttingCheckbox = document.getElementById('prevent-cutting'),
+    respectPageZoomCheckbox = document.getElementById('respect-page-zoom'),
     informAboutUpdateCheckbox = document.getElementById('inform-about-update'),
     screenshotTypeSelect = document.getElementById('screenshot-type'),
     watchGroupCheckbox = document.getElementById('watch-group'),
@@ -19,6 +20,7 @@ let elementEvents = [
     [qualityInput, 'input'],
     [maxHeightInput, 'input'],
     [preventCuttingCheckbox, 'change'],
+    [respectPageZoomCheckbox, 'change'],
     [informAboutUpdateCheckbox, 'change'],
     [screenshotTypeSelect, 'change'],
     [watchGroupCheckbox, 'change'],
@@ -50,6 +52,7 @@ function saveValues() {
         saveAs: saveAsSelect.value,
         format: formatSelect.value,
         preventCutting: preventCuttingCheckbox.checked,
+        respectPageZoom: respectPageZoomCheckbox.checked,
         informAboutUpdate: informAboutUpdateCheckbox.checked,
         screenshotType: screenshotTypeSelect.value,
         watchGroup: watchGroupCheckbox.checked
@@ -76,6 +79,7 @@ function restoreValues() {
         qualityInput.value = values.quality;
         maxHeightInput.value = values.maxHeight;
         preventCuttingCheckbox.checked = values.preventCutting;
+        respectPageZoomCheckbox.checked = values.respectPageZoom;
         informAboutUpdateCheckbox.checked = values.informAboutUpdate;
         screenshotTypeSelect.value = values.screenshotType;
         watchGroupCheckbox.checked = values.watchGroup;
