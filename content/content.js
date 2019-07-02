@@ -226,7 +226,7 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
         unfoldComments(screenshotPost);
     } else {
         try {
-            let commentSection = document.querySelector('.commentable_item ul').parentNode;
+            let commentSection = (document.querySelector('.commentable_item h6.accessible_elem') || document.querySelector('.commentable_item ul')).parentNode;
             commentSection.parentNode.removeChild(commentSection);
         } finally { }
 
@@ -329,6 +329,9 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
             y += partHeight;
             leftHeight -= partHeight;
         }
+
+        feed.classList.remove('fb_post_screenshot__feed');
+
         afterScreenshotCallback(image_data_urls);
     }
 

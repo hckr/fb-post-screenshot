@@ -39,35 +39,40 @@ function screenshot() {
         _ => window.location.href = watchGroupConfig.groupURL,
         watchGroupConfig.frequency * 1000
     );
-    
+
     let announcements = document.getElementById('pagelet_announcement_posts');
     announcements.parentNode.removeChild(announcements);
-    
+
     let post_id = document.querySelector('a[href*="/permalink"').href.replace(/.+permalink/, '').match(/\d{2,}/)[0],
         previous_post_id = sessionStorage.getItem('fbps_prevId');
-        
+
     if (previous_post_id == post_id)
         return;
-        
+
     let feed = document.querySelector('[role=feed]');
     if (feed) {
         feed.style.position = 'relative';
         feed.style.zIndex = 1000000;
     }
-        
-    screenshotPostInCurrentWindow({
-        options: {},
-        callback: image_data_urls => {
-            browser.runtime.sendMessage({
-                command: 'download',
-                data_uri: image_data_urls[0],
-                filename: `post-${post_id}`,
-                save_as_dialog: false
-            });
-            sessionStorage.setItem('fbps_prevId', post_id);
-        }
+
+    browser.storage.local.get().then(values => {
+        screenshotPostInCurrentWindow({
+            options: {
+                zoom: values['zoom'],
+                maxHeight: values['maxHeight']
+            },
+            callback: image_data_urls => {
+                browser.runtime.sendMessage({
+                    command: 'download',
+                    data_uri: image_data_urls[0],
+                    filename: `post-${post_id}`,
+                    save_as_dialog: false
+                });
+                sessionStorage.setItem('fbps_prevId', post_id);
+            }
+        })
     });
-    
+
     if (feed) {
         feed.classList.remove('fb_post_screenshot__feed');
     }
