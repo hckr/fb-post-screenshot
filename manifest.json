@@ -20,7 +20,7 @@
         }
     ],
     "background": {
-        "scripts": [ "background/storage_defaults.js", "background/register_oninstall.js", "background/background.js" ]
+        "scripts": [ "background/storage_defaults.js", "background/register_on_up_off_boarding.js", "background/background.js" ]
     },
     "options_ui": {
         "page": "options/options.html"

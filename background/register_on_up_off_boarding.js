@@ -12,3 +12,5 @@ browser.runtime.onInstalled.addListener(({ reason }) => {
             break;
     }
 });
+
+browser.runtime.setUninstallURL('https://docs.google.com/forms/d/e/1FAIpQLSf60CRLXn1wINJnYst2aykHMicQ01fWk4SsMgwj0z0D7hy3pg/viewform?usp=sf_link');
