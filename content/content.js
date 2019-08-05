@@ -43,7 +43,7 @@ function observerCallback(mutations) {
                     context_layer = container.closest('.uiContextualLayerPositioner');
                     menu_arrow = document.getElementById(context_layer.getAttribute('data-ownerid'));
                     post = menu_arrow.closest('.userContentWrapper, .fbPhotoSnowliftContainer');
-                    permalink = post.querySelector('abbr').parentNode.href;
+                    permalink = post.querySelector('abbr').parentNode.href.replace(/([^?]+)(\?.*)?/, '$1?comment_id=1');
                     if (!permalink) {
                         return;
                     }
