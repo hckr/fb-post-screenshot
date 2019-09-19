@@ -89,6 +89,10 @@ figure div {
     display: table;
 }
 
+figure img {
+    max-width: 100%;
+}
+
 figcaption {
     display: table-caption;
     caption-side: bottom;
