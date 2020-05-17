@@ -43,7 +43,7 @@ function observerCallback(mutations) {
                     context_layer = container.closest('.uiContextualLayerPositioner');
                     menu_arrow = document.getElementById(context_layer.getAttribute('data-ownerid'));
                     post = menu_arrow.closest('.userContentWrapper, .fbPhotoSnowliftContainer');
-                    permalink = post.querySelector('abbr').parentNode.href.replace(/([^?]+)(\?.*)?/, '$1?comment_id=1');
+                    permalink = post.querySelector('abbr').parentNode.href; /*.replace(/([^?]+)(\?.*)?/, '$1?comment_id=1');*/
                     if (!permalink) {
                         return;
                     }
@@ -173,6 +173,7 @@ window.addEventListener('message', e => {
                     received_screenshot_command = true;
                     function initScreenshot() {
                         window.title = 'Screenshotting...';
+                        document.body.style += ';overflow: hidden;';
                         let popup_overlay = document.createElement('div');
                         popup_overlay.className = 'fb_post_screenshot_popup_overlay';
                         let popup_overlay_content = document.createElement('span');
