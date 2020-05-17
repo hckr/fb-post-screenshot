@@ -276,6 +276,9 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
     }
 
     function screenshotPost() {
+        [].forEach.call(document.querySelectorAll('.invisible_elem'),
+            x => x.classList.remove('invisible_elem'));
+
         if (anonymize) {
             anonymizePost();
         }
