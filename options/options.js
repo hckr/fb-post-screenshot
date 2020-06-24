@@ -1,4 +1,5 @@
-document.getElementById('new-issue').onclick = _ => window.open('https://github.com/hckr/fb-post-screenshot/issues/new');
+document.getElementById('new-issue').onclick = _ =>
+    window.open('https://github.com/hckr/fb-post-screenshot/issues/new');
 
 let destinationRelativePathInput = document.getElementById('destination-relative-path'),
     saveAsSelect = document.getElementById('save-as'),
@@ -26,7 +27,7 @@ let elementEvents = [
     [informAboutUpdateCheckbox, 'change'],
     [screenshotTypeSelect, 'change'],
     [watchGroupCheckbox, 'change'],
-    [watchGroupFrequencyInput, 'input']
+    [watchGroupFrequencyInput, 'input'],
 ];
 
 for (let [el, ev] of elementEvents) {
@@ -42,7 +43,7 @@ for (let [el, ev] of elementEvents) {
         case sameAsPageZoomCheckbox:
             el.addEventListener(ev, _ => {
                 updateZoomInput();
-            })
+            });
         case watchGroupCheckbox:
             el.addEventListener(ev, _ => {
                 updateWatchGroupFrequencyVisibility();
@@ -61,22 +62,22 @@ function saveValues() {
         sameAsPageZoom: sameAsPageZoomCheckbox.checked,
         informAboutUpdate: informAboutUpdateCheckbox.checked,
         screenshotType: screenshotTypeSelect.value,
-        watchGroup: watchGroupCheckbox.checked
+        watchGroup: watchGroupCheckbox.checked,
     });
     if (destinationRelativePathInput.checkValidity()) {
-        browser.storage.local.set({ destinationRelativePath: destinationRelativePathInput.value });
+        browser.storage.local.set({destinationRelativePath: destinationRelativePathInput.value});
     }
     if (qualityInput.checkValidity()) {
-        browser.storage.local.set({ quality: parseFloat(qualityInput.value) });
+        browser.storage.local.set({quality: parseFloat(qualityInput.value)});
     }
     if (maxHeightInput.checkValidity()) {
-        browser.storage.local.set({ maxHeight: parseInt(maxHeightInput.value) });
+        browser.storage.local.set({maxHeight: parseInt(maxHeightInput.value)});
     }
     if (zoomInput.checkValidity()) {
-        browser.storage.local.set({ zoom: parseInt(zoomInput.value) });
+        browser.storage.local.set({zoom: parseInt(zoomInput.value)});
     }
     if (watchGroupFrequencyInput.checkValidity()) {
-        browser.storage.local.set({ watchGroupFrequency: parseInt(watchGroupFrequencyInput.value) });
+        browser.storage.local.set({watchGroupFrequency: parseInt(watchGroupFrequencyInput.value)});
     }
 }
 
@@ -118,5 +119,5 @@ function updateWatchGroupFrequencyVisibility() {
 }
 
 function updateZoomInput() {
-    zoomInput.disabled = sameAsPageZoomCheckbox.checked
+    zoomInput.disabled = sameAsPageZoomCheckbox.checked;
 }

@@ -36,18 +36,20 @@ function startWatchGroup(cfg) {
 
 function screenshot() {
     reloadTimeout = setTimeout(
-        _ => window.location.href = watchGroupConfig.groupURL,
+        _ => (window.location.href = watchGroupConfig.groupURL),
         watchGroupConfig.frequency * 1000
     );
 
     let announcements = document.getElementById('pagelet_announcement_posts');
     announcements.parentNode.removeChild(announcements);
 
-    let post_id = document.querySelector('a[href*="/permalink"').href.replace(/.+permalink/, '').match(/\d{2,}/)[0],
+    let post_id = document
+            .querySelector('a[href*="/permalink"')
+            .href.replace(/.+permalink/, '')
+            .match(/\d{2,}/)[0],
         previous_post_id = sessionStorage.getItem('fbps_prevId');
 
-    if (previous_post_id == post_id)
-        return;
+    if (previous_post_id == post_id) return;
 
     let feed = document.querySelector('[role=feed]');
     if (feed) {
@@ -59,18 +61,18 @@ function screenshot() {
         screenshotPostInCurrentWindow({
             options: {
                 zoom: values['zoom'],
-                maxHeight: values['maxHeight']
+                maxHeight: values['maxHeight'],
             },
             callback: image_data_urls => {
                 browser.runtime.sendMessage({
                     command: 'download',
                     data_uri: image_data_urls[0],
                     filename: `post-${post_id}`,
-                    save_as_dialog: false
+                    save_as_dialog: false,
                 });
                 sessionStorage.setItem('fbps_prevId', post_id);
-            }
-        })
+            },
+        });
     });
 
     if (feed) {

@@ -2,7 +2,8 @@ body {
     font-size: 1.11em;
 }
 
-input, select {
+input,
+select {
     font-size: 1em;
     font-family: inherit;
 }
@@ -17,12 +18,15 @@ input, select {
     flex-direction: row;
     line-height: 50px;
     min-height: 50px;
-    border-top: 1px solid rgba(12, 12, 13, 0.3);
     text-shadow: 0 1px 1px #fefffe;
     overflow: hidden;
     height: auto;
     opacity: 1;
-    transition: .5s ease-in all;
+    transition: 0.5s ease-in all;
+}
+
+.detail-row:not(:first-child) {
+    border-top: 1px solid rgba(12, 12, 13, 0.3);
 }
 
 .detail-row.hidden {
@@ -31,18 +35,18 @@ input, select {
     opacity: 0;
 }
 
-.detail-row img[alt="help"] {
+.detail-row img[alt='help'] {
     width: 24px;
     height: 24px;
     position: relative;
     top: 6px;
     margin-left: 6px;
     cursor: help;
-    opacity: .5;
-    transition: .3s opacity ease-in;
+    opacity: 0.5;
+    transition: 0.3s opacity ease-in;
 }
 
-.detail-row img[alt="help"]:hover {
+.detail-row img[alt='help']:hover {
     opacity: 1;
 }
 
@@ -56,7 +60,8 @@ input, select {
     max-width: 250px;
 }
 
-.detail-row-label, .detail-row-single {
+.detail-row-label,
+.detail-row-single {
     margin-left: 6px;
     width: 100%;
 }
@@ -66,7 +71,7 @@ input, select {
 }
 
 #quality-label {
-    transition: .3s opacity ease-in;
+    transition: 0.3s opacity ease-in;
     opacity: 0;
 }
 

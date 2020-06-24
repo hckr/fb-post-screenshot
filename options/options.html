@@ -1,94 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="options.css">
-</head>
-<body>
-    <div class="detail-rows">
-        <div class="detail-row">
-            <div class="detail-row-single">
-                <label for="destination-relative-path">Save screenshots to</label>
-                <span class="path-wrapper">
-                    .../Downloads/<input id="destination-relative-path" placeholder="leave empty not to save in a subfolder" pattern="(?!/)(?!.*/$)(\w[ /]?)*">
-                    <img src="../icons/help.png" alt="help" title="If you leave this field empty, screenshots will be saved in a default location. If you enter a name, screenshots will be saved in a subfolder with this name in a default location. Use / as path separator if you need.">
-                </span>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" href="options.css" />
+    </head>
+    <body>
+        <div class="detail-rows">
+            <div class="detail-row">
+                <div class="detail-row-single">
+                    <label for="destination-relative-path">Save screenshots to</label>
+                    <span class="path-wrapper">
+                        .../Downloads/<input
+                            id="destination-relative-path"
+                            placeholder="leave empty not to save in a subfolder"
+                            pattern="(?!/)(?!.*/$)(\w[ /]?)*"
+                        />
+                        <img
+                            src="../icons/help.png"
+                            alt="help"
+                            title="If you leave this field empty, screenshots will be saved in a default location. If you enter a name, screenshots will be saved in a subfolder with this name in a default location. Use / as path separator if you need."
+                        />
+                    </span>
+                </div>
             </div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-row-label"><label for="save-as">"Save as" dialog</label></div>
-            <div class="detail-row-value">
-                <select id="save-as" class="browser-style">
-                    <option value="browser">browser setting</option>
-                    <option value="yes">show</option>
-                    <option value="no">don't show</option>
-                </select>
-                <img src="../icons/help.png" alt="help" title="Specifies whether to provide a file chooser dialog to allow you to select a filename each time a screenshot will be saved.">
+            <div class="detail-row">
+                <div class="detail-row-label"><label for="save-as">"Save as" dialog</label></div>
+                <div class="detail-row-value">
+                    <select id="save-as" class="browser-style">
+                        <option value="browser">browser setting</option>
+                        <option value="yes">show</option>
+                        <option value="no">don't show</option>
+                    </select>
+                    <img
+                        src="../icons/help.png"
+                        alt="help"
+                        title="Specifies whether to provide a file chooser dialog to allow you to select a filename each time a screenshot will be saved."
+                    />
+                </div>
             </div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-row-label"><label for="format">Screenshot format</label></div>
-            <div class="detail-row-value">
-                <select id="format" class="browser-style">
-                    <option value="image/png">PNG (lossless)</option>
-                    <option value="image/jpeg">JPEG</option>
-                </select>
-                <label id="quality-label">– quality: <input id="quality" class="browser-style" type="number" min="0" max="1" step="0.01" required> (0–1)</label>
+            <div class="detail-row">
+                <div class="detail-row-label"><label for="format">Screenshot format</label></div>
+                <div class="detail-row-value">
+                    <select id="format" class="browser-style">
+                        <option value="image/png">PNG (lossless)</option>
+                        <option value="image/jpeg">JPEG</option>
+                    </select>
+                    <label id="quality-label"
+                        >– quality:
+                        <input id="quality" class="browser-style" type="number" min="0" max="1" step="0.01" required />
+                        (0–1)</label
+                    >
+                </div>
             </div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-row-label"><label for="max-height">Maximum height of a part</label></div>
-            <div class="detail-row-value">
-                <input id="max-height" class="browser-style" type="number" min="500" max="16000" step="1" required> px <img src="../icons/help.png" alt="help" title="If the post is longer than the specified height, it will be cut into parts that size at maximum.">
+            <div class="detail-row">
+                <div class="detail-row-label"><label for="max-height">Maximum height of a part</label></div>
+                <div class="detail-row-value">
+                    <input
+                        id="max-height"
+                        class="browser-style"
+                        type="number"
+                        min="500"
+                        max="16000"
+                        step="1"
+                        required
+                    />
+                    px
+                    <img
+                        src="../icons/help.png"
+                        alt="help"
+                        title="If the post is longer than the specified height, it will be cut into parts that size at maximum."
+                    />
+                </div>
             </div>
-        </div>
-        <div class="detail-row join-previous">
-            <div class="detail-row-single">
-                <label><input id="prevent-cutting" type="checkbox" class="browser-style"> prevent ending a part in the middle of a comment</label>
+            <div class="detail-row join-previous">
+                <div class="detail-row-single">
+                    <label
+                        ><input id="prevent-cutting" type="checkbox" class="browser-style" /> prevent ending a part in
+                        the middle of a comment</label
+                    >
+                </div>
             </div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-row-label"><label for="zoom">Screenshot zoom (scale)</label></div>
-            <div class="detail-row-value">
-                <input id="zoom" class="browser-style" type="number" min="10" max="1000" step="1" required> % <img src="../icons/help.png" alt="help" title="100% = default screenshot size. If you choose a larger value, the resulting image will be bigger and potentially more readable.">
+            <div class="detail-row">
+                <div class="detail-row-label"><label for="zoom">Screenshot zoom (scale)</label></div>
+                <div class="detail-row-value">
+                    <input id="zoom" class="browser-style" type="number" min="10" max="1000" step="1" required /> %
+                    <img
+                        src="../icons/help.png"
+                        alt="help"
+                        title="100% = default screenshot size. If you choose a larger value, the resulting image will be bigger and potentially more readable."
+                    />
+                </div>
             </div>
-        </div>
-        <div class="detail-row join-previous">
-            <div class="detail-row-single">
-                <label><input id="same-as-page-zoom" type="checkbox" class="browser-style"> same as page zoom</label> <img src="../icons/help.png" alt="help" title="When you zoom Facebook in or out (e.g. using shortcut Ctrl with - or +) it will affect resulting post image.">
+            <div class="detail-row join-previous">
+                <div class="detail-row-single">
+                    <label
+                        ><input id="same-as-page-zoom" type="checkbox" class="browser-style" /> same as page zoom</label
+                    >
+                    <img
+                        src="../icons/help.png"
+                        alt="help"
+                        title="When you zoom Facebook in or out (e.g. using shortcut Ctrl with - or +) it will affect resulting post image."
+                    />
+                </div>
             </div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-row-label"><label for="screenshot-type">Screenshot type</label></div>
-            <div class="detail-row-value">
-                <select id="screenshot-type" class="browser-style">
-                    <option value="with-all-comments">post with all comments</option>
-                    <option value="without-comments">post without the comment section</option>
-                </select>
+            <div class="detail-row">
+                <div class="detail-row-label"><label for="screenshot-type">Screenshot type</label></div>
+                <div class="detail-row-value">
+                    <select id="screenshot-type" class="browser-style">
+                        <option value="with-all-comments">post with all comments</option>
+                        <option value="without-comments">post without the comment section</option>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-row-single">
-                <label><input id="inform-about-update" type="checkbox" class="browser-style"> inform about the update by opening the add-on homepage</label> <img src="../icons/help.png" alt="help" title="If this is selected, when the add-on update will be installed by the browser, the page will be opened to inform you about the newest changes.">
+            <div class="detail-row">
+                <div class="detail-row-single">
+                    <label
+                        ><input id="inform-about-update" type="checkbox" class="browser-style" /> inform about the
+                        update by opening the add-on homepage</label
+                    >
+                    <img
+                        src="../icons/help.png"
+                        alt="help"
+                        title="If this is selected, when the add-on update will be installed by the browser, the page will be opened to inform you about the newest changes."
+                    />
+                </div>
             </div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-row-single">
-                <label><input id="watch-group" type="checkbox" class="browser-style"> experimental: enable option to watch a group for new posts</label> <img src="../icons/help.png" alt="help" title="If this is selected, a new option will show up in add-on menu if the current page is a Facebook group. The option causes add-on to watch recent posts of a group and capture each new post automatically. Tab with this option enabled should be an active tab of a browser window in order to refresh according to the setting (background tabs have less priority).">
+            <div class="detail-row">
+                <div class="detail-row-single">
+                    <label
+                        ><input id="watch-group" type="checkbox" class="browser-style" /> experimental: enable option to
+                        watch a group for new posts</label
+                    >
+                    <img
+                        src="../icons/help.png"
+                        alt="help"
+                        title="If this is selected, a new option will show up in add-on menu if the current page is a Facebook group. The option causes add-on to watch recent posts of a group and capture each new post automatically. Tab with this option enabled should be an active tab of a browser window in order to refresh according to the setting (background tabs have less priority)."
+                    />
+                </div>
             </div>
-        </div>
-        <div id="watch-group-frequency-row" class="detail-row join-previous hidden">
-            <div class="detail-row-single">
-                <label id="watch-group-frequency-label">Refresh every <input id="watch-group-frequency" class="browser-style" type="number" min="15" step="1" required> seconds</label>
+            <div id="watch-group-frequency-row" class="detail-row join-previous hidden">
+                <div class="detail-row-single">
+                    <label id="watch-group-frequency-label"
+                        >Refresh every
+                        <input
+                            id="watch-group-frequency"
+                            class="browser-style"
+                            type="number"
+                            min="15"
+                            step="1"
+                            required
+                        />
+                        seconds</label
+                    >
+                </div>
             </div>
-        </div>
 
-        <fieldset>
-            Do you have any suggestions? Does something not work?<br>
-            I'll be happy to help you!
-            <button id="new-issue" class="browser-style">💖 File an issue on GitHub</button>
-        </fieldset>
-    </div>
-    <script src="options.js"></script>
-</body>
+            <fieldset>
+                Do you have any suggestions? Does something not work?<br />
+                I'll be happy to help you!
+                <button id="new-issue" class="browser-style">💖 File an issue on GitHub</button>
+            </fieldset>
+        </div>
+        <script src="options.js"></script>
+    </body>
 </html>

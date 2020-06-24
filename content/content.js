@@ -5,7 +5,7 @@ for (let button of document.querySelectorAll('.save_screenshot, .fb_post_screens
 let observer = new MutationObserver(observerCallback);
 observer.observe(document.documentElement, {
     childList: true,
-    subtree: true
+    subtree: true,
 });
 
 let infobox = document.createElement('div'),
@@ -23,7 +23,7 @@ function showInfoBox(msg) {
     clearTimeout(infobox_timeout);
     infobox_timeout = setTimeout(_ => {
         infobox.style.opacity = 0;
-        setTimeout(_ => infobox.style.display = 'none', 600);
+        setTimeout(_ => (infobox.style.display = 'none'), 600);
     }, 5000);
 }
 
@@ -43,7 +43,8 @@ function observerCallback(mutations) {
                     context_layer = container.closest('.uiContextualLayerPositioner');
                     menu_arrow = document.getElementById(context_layer.getAttribute('data-ownerid'));
                     post = menu_arrow.closest('.userContentWrapper, .fbPhotoSnowliftContainer');
-                    permalink = post.querySelector('abbr').parentNode.href; /*.replace(/([^?]+)(\?.*)?/, '$1?comment_id=1');*/
+                    permalink = post.querySelector('abbr').parentNode.href;
+                    /*.replace(/([^?]+)(\?.*)?/, '$1?comment_id=1');*/
                     if (!permalink) {
                         return;
                     }
@@ -54,7 +55,10 @@ function observerCallback(mutations) {
                 if (menu_item) {
                     function createMenuElement(button_text, button_text2) {
                         let button = document.createElement('li');
-                        button.className = '_54ni __MenuItem save_screenshot' + (menu_item.querySelector('._xaa._4i13') ? ' _xaa _4i13' : '') + (menu_item.querySelector('._41t6') ? ' _41t6' : '');
+                        button.className =
+                            '_54ni __MenuItem save_screenshot' +
+                            (menu_item.querySelector('._xaa._4i13') ? ' _xaa _4i13' : '') +
+                            (menu_item.querySelector('._41t6') ? ' _41t6' : '');
                         button.role = 'presentation';
                         let button_a = document.createElement('a');
                         button_a.className = '_54nc';
@@ -67,7 +71,8 @@ function observerCallback(mutations) {
                         button_a_span_span.className = '_54nh';
                         button_a_span.appendChild(button_a_span_span);
                         let button_a_span_span_div = document.createElement('div');
-                        button_a_span_span_div.className = '_4p23' + (menu_item.querySelector('._2ezx') ? ' _2ezx' : '');
+                        button_a_span_span_div.className =
+                            '_4p23' + (menu_item.querySelector('._2ezx') ? ' _2ezx' : '');
                         button_a_span_span.appendChild(button_a_span_span_div);
                         let save_post_i_els = container.querySelector('[ajaxify^="/save"]').querySelectorAll('i');
                         let button_a_span_span_div_i1 = document.createElement('i');
@@ -78,31 +83,42 @@ function observerCallback(mutations) {
                         button_a_span_span_div.appendChild(button_a_span_span_div_i2);
                         let button_text_node = document.createTextNode(button_text);
                         button_a_span_span_div.appendChild(button_text_node);
-                        button.onmouseover = function() { this.classList.add('_54ne'); };
-                        button.onmouseout = function() { this.classList.remove('_54ne'); };
-                        button.toggleText = function() {
+                        button.onmouseover = function () {
+                            this.classList.add('_54ne');
+                        };
+                        button.onmouseout = function () {
+                            this.classList.remove('_54ne');
+                        };
+                        button.toggleText = function () {
                             if (button_text_node.textContent == button_text) {
                                 button_text_node.textContent = button_text2;
                             } else {
                                 button_text_node.textContent = button_text;
                             }
-                        }
+                        };
                         return button;
                     }
                     let save_screenshot = createMenuElement('Save screenshot', 'Creating screenshot...');
                     save_screenshot.onclick = clickHandler.bind(save_screenshot, false);
-                    let save_screenshot_anon = createMenuElement('Save anonymized screenshot', 'Creating screenshot...');
+                    let save_screenshot_anon = createMenuElement(
+                        'Save anonymized screenshot',
+                        'Creating screenshot...'
+                    );
                     save_screenshot_anon.onclick = clickHandler.bind(save_screenshot_anon, true);
                     function clickHandler(anonymize) {
                         let old_onclick = this.onclick;
                         this.onclick = undefined;
                         this.toggleText();
-                        let post_window = window.open(permalink, 's', 'width=300, height=100, left=0, top=0, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
+                        let post_window = window.open(
+                            permalink,
+                            's',
+                            'width=300, height=100, left=0, top=0, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no'
+                        );
                         post.click();
                         this.toggleText();
                         this.onclick = old_onclick;
 
-                        let received_secret = "";
+                        let received_secret = '';
 
                         function responseCallback(response) {
                             if ('confirmation_secret' in response) {
@@ -124,14 +140,22 @@ function observerCallback(mutations) {
                                 browser.runtime.sendMessage({
                                     command: 'download',
                                     data_uri: image_data_url,
-                                    filename: filename
+                                    filename: filename,
                                 });
                             }
                         }
                         let confirmation_secret = Math.random().toString();
                         (function try_send_command_until_confirmation_received() {
                             if (received_secret != confirmation_secret) {
-                                sendMessage(post_window, { type: 'command', command: 'screenshot', arguments: [ anonymize, confirmation_secret ] }, responseCallback);
+                                sendMessage(
+                                    post_window,
+                                    {
+                                        type: 'command',
+                                        command: 'screenshot',
+                                        arguments: [anonymize, confirmation_secret],
+                                    },
+                                    responseCallback
+                                );
                                 setTimeout(try_send_command_until_confirmation_received, 1000);
                             }
                         })();
@@ -158,12 +182,14 @@ let received_screenshot_command = false;
 
 window.addEventListener('message', e => {
     let origin = e.origin || e.originalEvent.origin;
-    if (origin !== 'https://www.facebook.com')
+    if (origin !== 'https://www.facebook.com') {
         return;
-    if (e.data[0] !== '{')
+    }
+    if (e.data[0] !== '{') {
         return;
+    }
     let data = JSON.parse(e.data);
-    switch(data.type) {
+    switch (data.type) {
         case 'command':
             switch (data.command) {
                 case 'screenshot':
@@ -184,19 +210,34 @@ window.addEventListener('message', e => {
                         popup_overlay_content.appendChild(document.createElement('br'));
                         let popup_overlay_content_status = document.createElement('span');
                         popup_overlay_content_status.className = 'fb_post_screenshot_popup_overlay_content_status';
-                        popup_overlay_content_status.innerHTML = 'Status: clicked <span id="__fb_post_screenshot_status_clicks_made">0</span> times, at least <span id="__fb_post_screenshot_status_clicks_more">0</span> more clicks...';
+                        popup_overlay_content_status.innerHTML =
+                            'Status: clicked <span id="__fb_post_screenshot_status_clicks_made">0</span> times, at least <span id="__fb_post_screenshot_status_clicks_more">0</span> more clicks...';
                         popup_overlay_content.appendChild(popup_overlay_content_status);
                         popup_overlay.appendChild(popup_overlay_content);
                         document.body.appendChild(popup_overlay);
-                        e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, confirmation_secret: data.arguments[1] }), origin);
+                        e.source.postMessage(
+                            JSON.stringify({
+                                type: 'response',
+                                id: data.id,
+                                confirmation_secret: data.arguments[1],
+                            }),
+                            origin
+                        );
                         browser.storage.local.get().then(values => {
                             screenshotPostInCurrentWindow({
                                 anonymize: data.arguments[0],
                                 options: values,
                                 callback: image_data_urls => {
-                                    e.source.postMessage(JSON.stringify({ type: 'response', id: data.id, image_data_urls: image_data_urls }), origin);
+                                    e.source.postMessage(
+                                        JSON.stringify({
+                                            type: 'response',
+                                            id: data.id,
+                                            image_data_urls,
+                                        }),
+                                        origin
+                                    );
                                     window.close();
-                                }
+                                },
                             });
                         });
                     }
@@ -217,7 +258,6 @@ window.addEventListener('message', e => {
 });
 
 function screenshotPostInCurrentWindow({anonymize, options, callback: afterScreenshotCallback}) {
-
     let postWrapper = document.querySelector('.userContentWrapper'),
         feed = postWrapper.closest('[role=feed], #event_wall'),
         unfoldQueue = [];
@@ -227,14 +267,18 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
         unfoldComments(screenshotPost);
     } else {
         try {
-            let commentSection = (document.querySelector('.commentable_item h6.accessible_elem') || document.querySelector('.commentable_item ul')).parentNode;
+            let commentSection = (
+                document.querySelector('.commentable_item h6.accessible_elem') ||
+                document.querySelector('.commentable_item ul')
+            ).parentNode;
             commentSection.parentNode.removeChild(commentSection);
-        } finally { }
+        } finally {
+        }
 
         screenshotPost();
     }
 
-    return // only function definitions below
+    return; // only function definitions below
 
     function unfoldComments(callback) {
         if (!unfoldQueue.length) {
@@ -245,12 +289,14 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
 
     function discoverUnfoldLinks() {
         let pagers = postWrapper.querySelectorAll('.UFIPagerLink');
-        pagers.forEach(node => node.__wait = 1000);
+        pagers.forEach(node => (node.__wait = 1000));
         let seeMores = postWrapper.querySelectorAll('.fss');
-        seeMores.forEach(node => node.__wait = 150);
-        let replies = [].filter.call(postWrapper.querySelectorAll('._4sxc, .UFIReplyList .UFICommentLink'),
-                                     node => !node.querySelector('.UFICollapseIcon'));
-        replies.forEach(node => node.__wait = 1000);
+        seeMores.forEach(node => (node.__wait = 150));
+        let replies = [].filter.call(
+            postWrapper.querySelectorAll('._4sxc, .UFIReplyList .UFICommentLink'),
+            node => !node.querySelector('.UFICollapseIcon')
+        );
+        replies.forEach(node => (node.__wait = 1000));
         unfoldQueue.push(...pagers);
         unfoldQueue.push(...seeMores);
         unfoldQueue.push(...replies);
@@ -264,7 +310,7 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
     function unfoldComments2(callback) {
         let clicks_made = document.querySelector('#__fb_post_screenshot_status_clicks_made'),
             clicks_more = document.querySelector('#__fb_post_screenshot_status_clicks_more');
-            clicks_more.innerText = unfoldQueue.length;
+        clicks_more.innerText = unfoldQueue.length;
         if (unfoldQueue.length) {
             let node = unfoldQueue.pop();
             node.click();
@@ -276,8 +322,7 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
     }
 
     function screenshotPost() {
-        [].forEach.call(document.querySelectorAll('.invisible_elem'),
-            x => x.classList.remove('invisible_elem'));
+        [].forEach.call(document.querySelectorAll('.invisible_elem'), x => x.classList.remove('invisible_elem'));
 
         if (anonymize) {
             anonymizePost();
@@ -300,7 +345,7 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
         let canvas = document.createElement('canvas'),
             ctx = canvas.getContext('2d');
 
-        const zoomRatio = options.sameAsPageZoom ? window.devicePixelRatio : (options.zoom / 100);
+        const zoomRatio = options.sameAsPageZoom ? window.devicePixelRatio : options.zoom / 100;
 
         let maxPartSize = (options.maxHeight / zoomRatio) | 0,
             leftHeight = height,
@@ -347,7 +392,8 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
         profileLinkToAnonymousName[extractProfileId(opEl)] = 'OP';
         opEl.textContent = 'OP';
 
-        for (let nameEl of postWrapper.querySelectorAll(':not(.fcg) > .profileLink, ._6qw4, .UFICommentActorName, ._3l3x a[data-hovercard]')) {
+        const selector = ':not(.fcg) > .profileLink, ._6qw4, .UFICommentActorName, ._3l3x a[data-hovercard]';
+        for (let nameEl of postWrapper.querySelectorAll(selector)) {
             let profileLink = extractProfileId(nameEl);
             if (!profileLinkToAnonymousName[profileLink]) {
                 profileLinkToAnonymousName[profileLink] = 'Profile ' + i;
@@ -356,7 +402,10 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
             nameEl.textContent = profileLinkToAnonymousName[profileLink];
         }
 
-        for (let avatar of [postWrapper.querySelector('img'), ...postWrapper.querySelectorAll('._3mf5, .UFIActorImage, a[data-hovercard] img')]) {
+        for (let avatar of [
+            postWrapper.querySelector('img'),
+            ...postWrapper.querySelectorAll('._3mf5, .UFIActorImage, a[data-hovercard] img'),
+        ]) {
             avatar.classList.add('fb_post_screenshot__blur');
         }
 

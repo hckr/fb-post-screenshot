@@ -2,6 +2,7 @@ let objectURLs = new Map(); // id => objectURL
 
 let destinationRelativePath = '',
     saveAs = undefined;
+
 function updateLocalOptions(data) {
     if ('destinationRelativePath' in data) {
         destinationRelativePath = data.destinationRelativePath;
@@ -18,6 +19,7 @@ function updateLocalOptions(data) {
             break;
     }
 }
+
 // browser.storage.local.get().then(updateLocalOptions); -- updated in storage_defaults.js - triggers change
 browser.storage.onChanged.addListener(changes => {
     let newData = {};
@@ -33,7 +35,6 @@ browser.runtime.onMessage.addListener(data => {
             handleDownload(data);
             break;
     }
-    
 });
 
 browser.downloads.onChanged.addListener(delta => {
@@ -46,17 +47,23 @@ browser.downloads.onChanged.addListener(delta => {
 function handleDownload(data) {
     let blob = dataURItoBlob(data.data_uri),
         objectURL = URL.createObjectURL(blob),
-        pathWithFileName = appendExtension([destinationRelativePath, data.filename].filter(x => x.length).join('/'), blob.type);
-    
-    browser.downloads.download({
-        url: objectURL,
-        filename: pathWithFileName,
-        saveAs: data.save_as_dialog !== undefined ? data.save_as_dialog : saveAs
-    }).then(id => {
-        objectURLs.set(id, objectURL);
-    }).catch(_ => {
-        URL.revokeObjectURL(objectURL);
-    });
+        pathWithFileName = appendExtension(
+            [destinationRelativePath, data.filename].filter(x => x.length).join('/'),
+            blob.type
+        );
+
+    browser.downloads
+        .download({
+            url: objectURL,
+            filename: pathWithFileName,
+            saveAs: data.save_as_dialog !== undefined ? data.save_as_dialog : saveAs,
+        })
+        .then(id => {
+            objectURLs.set(id, objectURL);
+        })
+        .catch(_ => {
+            URL.revokeObjectURL(objectURL);
+        });
 }
 
 function appendExtension(filename, mimetype) {
@@ -69,7 +76,7 @@ function appendExtension(filename, mimetype) {
             ext = '.jpg';
             break;
     }
-    return filename + ext
+    return filename + ext;
 }
 
 function dataURItoBlob(dataURI) {
@@ -79,5 +86,5 @@ function dataURItoBlob(dataURI) {
     for (let i = 0; i < binary.length; i++) {
         array.push(binary.charCodeAt(i));
     }
-    return new Blob([ new Uint8Array(array) ], { type: mime });
+    return new Blob([new Uint8Array(array)], {type: mime});
 }

@@ -10,9 +10,9 @@ const defaults = {
     informAboutUpdate: true,
     screenshotType: 'with-all-comments',
     watchGroup: false,
-    watchGroupFrequency: 60
+    watchGroupFrequency: 60,
 };
 
-browser.storage.local.get().then(values =>
-    browser.storage.local.set(
-        Object.assign(Object.assign({}, defaults), values)));
+browser.storage.local
+    .get()
+    .then(values => browser.storage.local.set(Object.assign(Object.assign({}, defaults), values)));

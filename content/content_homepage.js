@@ -9,7 +9,9 @@ if (downloadLink) {
             addonIconInfo.classList.add('highlighted');
             let highlightedText = document.createElement('span');
             highlightedText.className = 'highlighted-text';
-            highlightedText.innerText = `A new version (${browser.runtime.getManifest().version}) of the extension has been installed. You can see the changelog below. `;
+            highlightedText.innerText = `A new version (${
+                browser.runtime.getManifest().version
+            }) of the extension has been installed. You can see the changelog below. `;
             addonIconInfo.appendChild(highlightedText);
         } else if (window.location.search.search('installed') != -1) {
             addonIconInfo.classList.add('highlighted');
@@ -20,12 +22,22 @@ if (downloadLink) {
         } else {
             let highlightedText = document.createElement('span');
             highlightedText.className = 'highlighted-text';
-            highlightedText.innerText = `You have the extension installed (v. ${browser.runtime.getManifest().version}).`;
+            highlightedText.innerText = `You have the extension installed (v. ${
+                browser.runtime.getManifest().version
+            }).`;
             addonIconInfo.appendChild(highlightedText);
         }
-        addonIconInfo.appendChild(document.createTextNode(" If you'd like to check out the options, please find the icon in the top right corner of the window, where the arrow is pointing."));
+        addonIconInfo.appendChild(
+            document.createTextNode(
+                " If you'd like to check out the options, please find the icon in the top right corner of the window, where the arrow is pointing."
+            )
+        );
         if (window.location.search.search('updated') != -1) {
-            addonIconInfo.appendChild(document.createTextNode(' You can prevent the opening of this page on every update by changing an option.'));
+            addonIconInfo.appendChild(
+                document.createTextNode(
+                    ' You can prevent the opening of this page on every update by changing an option.'
+                )
+            );
         }
         downloadLink.parentNode.insertBefore(addonIconInfo, downloadLink);
     }
