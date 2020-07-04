@@ -52,118 +52,112 @@ function observerCallback(mutations) {
                     return;
                 }
                 let menu_item = container.querySelector('.__MenuItem');
-                if (menu_item) {
-                    function createMenuElement(button_text, button_text2) {
-                        let button = document.createElement('li');
-                        button.className =
-                            '_54ni __MenuItem save_screenshot' +
-                            (menu_item.querySelector('._xaa._4i13') ? ' _xaa _4i13' : '') +
-                            (menu_item.querySelector('._41t6') ? ' _41t6' : '');
-                        button.role = 'presentation';
-                        let button_a = document.createElement('a');
-                        button_a.className = '_54nc';
-                        button_a.setAttribute('role', 'menuitem');
-                        button_a.title = button_text;
-                        button.appendChild(button_a);
-                        let button_a_span = document.createElement('span');
-                        button_a.appendChild(button_a_span);
-                        let button_a_span_span = document.createElement('span');
-                        button_a_span_span.className = '_54nh';
-                        button_a_span.appendChild(button_a_span_span);
-                        let button_a_span_span_div = document.createElement('div');
-                        button_a_span_span_div.className =
-                            '_4p23' + (menu_item.querySelector('._2ezx') ? ' _2ezx' : '');
-                        button_a_span_span.appendChild(button_a_span_span_div);
-                        let save_post_i_els = container.querySelector('[ajaxify^="/save"]').querySelectorAll('i');
-                        let button_a_span_span_div_i1 = document.createElement('i');
-                        button_a_span_span_div_i1.className = save_post_i_els[0].className;
-                        let button_a_span_span_div_i2 = document.createElement('i');
-                        button_a_span_span_div.appendChild(button_a_span_span_div_i1);
-                        button_a_span_span_div_i2.className = save_post_i_els[1].className;
-                        button_a_span_span_div.appendChild(button_a_span_span_div_i2);
-                        let button_text_node = document.createTextNode(button_text);
-                        button_a_span_span_div.appendChild(button_text_node);
-                        button.onmouseover = function () {
-                            this.classList.add('_54ne');
-                        };
-                        button.onmouseout = function () {
-                            this.classList.remove('_54ne');
-                        };
-                        button.toggleText = function () {
-                            if (button_text_node.textContent == button_text) {
-                                button_text_node.textContent = button_text2;
-                            } else {
-                                button_text_node.textContent = button_text;
-                            }
-                        };
-                        return button;
-                    }
-                    let save_screenshot = createMenuElement('Save screenshot', 'Creating screenshot...');
-                    save_screenshot.onclick = clickHandler.bind(save_screenshot, false);
-                    let save_screenshot_anon = createMenuElement(
-                        'Save anonymized screenshot',
-                        'Creating screenshot...'
-                    );
-                    save_screenshot_anon.onclick = clickHandler.bind(save_screenshot_anon, true);
-                    function clickHandler(anonymize) {
-                        let old_onclick = this.onclick;
-                        this.onclick = undefined;
-                        this.toggleText();
-                        let post_window = window.open(
-                            permalink,
-                            's',
-                            'width=300, height=100, left=0, top=0, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no'
-                        );
-                        post.click();
-                        this.toggleText();
-                        this.onclick = old_onclick;
-
-                        let received_secret = '';
-
-                        function responseCallback(response) {
-                            if ('confirmation_secret' in response) {
-                                received_secret = response.confirmation_secret;
-                                return;
-                            }
-                            let post_id = permalink.replace(/.+permalink/, '').match(/\d{2,}/)[0],
-                                part_nr = 1;
-
-                            showInfoBox(`Saving screenshot of post ${post_id}...`);
-
-                            for (let image_data_url of response.image_data_urls) {
-                                let filename;
-                                if (response.image_data_urls.length > 1) {
-                                    filename = `post-${post_id}-${part_nr++}-of-${response.image_data_urls.length}`;
-                                } else {
-                                    filename = `post-${post_id}`;
-                                }
-                                browser.runtime.sendMessage({
-                                    command: 'download',
-                                    data_uri: image_data_url,
-                                    filename: filename,
-                                });
-                            }
-                        }
-                        let confirmation_secret = Math.random().toString();
-                        (function try_send_command_until_confirmation_received() {
-                            if (received_secret != confirmation_secret) {
-                                sendMessage(
-                                    post_window,
-                                    {
-                                        type: 'command',
-                                        command: 'screenshot',
-                                        arguments: [anonymize, confirmation_secret],
-                                    },
-                                    responseCallback
-                                );
-                                setTimeout(try_send_command_until_confirmation_received, 1000);
-                            }
-                        })();
-                    }
-                    menu_item.parentNode.insertBefore(save_screenshot, menu_item);
-                    menu_item.parentNode.insertBefore(save_screenshot_anon, menu_item);
+                if (!menu_item) {
                     return;
                 }
+                function createMenuElement(button_text, button_text2) {
+                    let button = document.createElement('li');
+                    button.className = '_54ni __MenuItem _xaa _4i13 save_screenshot';
+                    button.role = 'presentation';
+                    let button_a = document.createElement('a');
+                    button_a.className = '_54nc';
+                    button_a.setAttribute('role', 'menuitem');
+                    button_a.title = button_text;
+                    button.appendChild(button_a);
+                    let button_a_span = document.createElement('span');
+                    button_a.appendChild(button_a_span);
+                    let button_a_span_span = document.createElement('span');
+                    button_a_span_span.className = '_54nh';
+                    button_a_span.appendChild(button_a_span_span);
+                    let button_a_span_span_div = document.createElement('div');
+                    button_a_span_span_div.className = '_4p23' + (menu_item.querySelector('._2ezx') ? ' _2ezx' : '');
+                    button_a_span_span.appendChild(button_a_span_span_div);
+                    let save_post_i_els = container.querySelector('[ajaxify]').querySelectorAll('i'); /// bug here
+                    let button_a_span_span_div_i1 = document.createElement('i');
+                    button_a_span_span_div_i1.className = save_post_i_els[0].className;
+                    let button_a_span_span_div_i2 = document.createElement('i');
+                    button_a_span_span_div.appendChild(button_a_span_span_div_i1);
+                    button_a_span_span_div_i2.className = save_post_i_els[1].className;
+                    button_a_span_span_div.appendChild(button_a_span_span_div_i2);
+                    let button_text_node = document.createTextNode(button_text);
+                    button_a_span_span_div.appendChild(button_text_node);
+                    button.onmouseover = function () {
+                        this.classList.add('_54ne');
+                    };
+                    button.onmouseout = function () {
+                        this.classList.remove('_54ne');
+                    };
+                    button.toggleText = function () {
+                        if (button_text_node.textContent == button_text) {
+                            button_text_node.textContent = button_text2;
+                        } else {
+                            button_text_node.textContent = button_text;
+                        }
+                    };
+                    return button;
+                }
+                let save_screenshot = createMenuElement('Save screenshot', 'Creating screenshot...');
+                save_screenshot.onclick = clickHandler.bind(save_screenshot, false);
+                let save_screenshot_anon = createMenuElement('Save anonymized screenshot', 'Creating screenshot...');
+                save_screenshot_anon.onclick = clickHandler.bind(save_screenshot_anon, true);
+                function clickHandler(anonymize) {
+                    let old_onclick = this.onclick;
+                    this.onclick = undefined;
+                    this.toggleText();
+                    let post_window = window.open(
+                        permalink,
+                        's',
+                        'width=300, height=100, left=0, top=0, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no'
+                    );
+                    post.click();
+                    this.toggleText();
+                    this.onclick = old_onclick;
+
+                    let received_secret = '';
+
+                    function responseCallback(response) {
+                        if ('confirmation_secret' in response) {
+                            received_secret = response.confirmation_secret;
+                            return;
+                        }
+                        let post_id = permalink.replace(/.+permalink/, '').match(/\d{2,}/)[0],
+                            part_nr = 1;
+
+                        showInfoBox(`Saving screenshot of post ${post_id}...`);
+
+                        for (let image_data_url of response.image_data_urls) {
+                            let filename;
+                            if (response.image_data_urls.length > 1) {
+                                filename = `post-${post_id}-${part_nr++}-of-${response.image_data_urls.length}`;
+                            } else {
+                                filename = `post-${post_id}`;
+                            }
+                            browser.runtime.sendMessage({
+                                command: 'download',
+                                data_uri: image_data_url,
+                                filename: filename,
+                            });
+                        }
+                    }
+                    let confirmation_secret = Math.random().toString();
+                    (function try_send_command_until_confirmation_received() {
+                        if (received_secret != confirmation_secret) {
+                            sendMessage(
+                                post_window,
+                                {
+                                    type: 'command',
+                                    command: 'screenshot',
+                                    arguments: [anonymize, confirmation_secret],
+                                },
+                                responseCallback
+                            );
+                            setTimeout(try_send_command_until_confirmation_received, 1000);
+                        }
+                    })();
+                }
+                menu_item.parentNode.insertBefore(save_screenshot, menu_item);
+                menu_item.parentNode.insertBefore(save_screenshot_anon, menu_item);
+                return;
             }
         }
     }
