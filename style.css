@@ -5,7 +5,8 @@ html {
     scroll-behavior: smooth;
 }
 
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
 }
@@ -43,12 +44,24 @@ a:focus {
     box-shadow: 0 0 10px 2px #1e394f;
 }
 
+.warning {
+    margin: -10px auto 20px;
+    padding: 0 10px;
+    color: #c7496a;
+    max-width: 500px;
+}
+
+.warning div {
+    margin-top: 5px;
+}
+
 .changelog-link {
     display: table;
     margin: auto;
 }
 
-h1, h2 {
+h1,
+h2 {
     margin: 0;
     padding: 0;
     font-weight: 400;
@@ -74,6 +87,33 @@ h2 {
     color: #85c0f1;
     font-size: 24px;
     margin-top: 10px;
+}
+
+@media screen and (max-width: 800px) {
+    h1 {
+        font-size: 32px;
+        background-size: 50px;
+    }
+
+    .title {
+        margin-top: 10px;
+        padding-left: 70px;
+    }
+
+    .subtitle {
+        font-size: 18px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    h1 {
+        background: none;
+    }
+
+    .title {
+        margin-top: 0;
+        padding-left: 0;
+    }
 }
 
 figure {
