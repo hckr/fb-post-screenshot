@@ -287,7 +287,7 @@ function screenshotPostInCurrentWindow({anonymize, options, callback: afterScree
         let seeMores = postWrapper.querySelectorAll('.fss');
         seeMores.forEach(node => (node.__wait = 150));
         let replies = [].filter.call(
-            postWrapper.querySelectorAll('._4sxc, .UFIReplyList .UFICommentLink'),
+            postWrapper.querySelectorAll('._4sxc, .UFIReplyList .UFICommentLink, .\\34 ssp'),
             node => !node.querySelector('.UFICollapseIcon')
         );
         replies.forEach(node => (node.__wait = 1000));
