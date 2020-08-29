@@ -86,6 +86,7 @@ function setMutationHandler(target, selector, handler, options) {
 	}
 }
 
+
 let i = 0;
 
 let feed, post, post_header, post_menu, save_screenshot_button;
@@ -196,14 +197,14 @@ function pollPosts() {
                                     },
                                     responseCallback
                                 );
-                                setTimeout(try_send_command_until_confirmation_received, 1500);
+                                setTimeout(try_send_command_until_confirmation_received, 8000);
                             }
                         })();
-                    },4000);
+                    },100);
 
                     setTimeout( function() {
                         node.previousSibling.style.color = 'rgb(187, 187, 187)';
-                    },8000);
+                    },6000);
 
                 });
             }
@@ -303,7 +304,14 @@ window.addEventListener('message', e => {
                                     //if (!options.screenshotType == 'with-all-comments') {
                                     //    alert('Error 205');
                                     //} 
-                                    setTimeout( function() { screenshotPost(); },2000)
+                                    setTimeout( function() { 
+
+                                        if (document.readyState === 'complete') {
+                                         
+                                        
+                                        screenshotPost();}
+
+                                     },1000)
                                     
                                     
                                     function screenshotPost() {
